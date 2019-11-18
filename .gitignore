@@ -1,2 +1,6 @@
 # Ignore these directories
 UI/
+
+# Files to ignore
+.xlsx
+.xls
