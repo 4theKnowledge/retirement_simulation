@@ -1,28 +1,32 @@
 """
 
 """
-
+#%%
 import pandas as pd
 from datetime import date
 import numpy as np
 from collections import OrderedDict
 from dateutil.relativedelta import *
 from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+fig = matplotlib.pyplot.gcf()
+fig.set_size_inches(18.5, 10.5, forward=True)
 
 from absl import flags
 from absl import app
 
-FLAGS = flags.FLAGS
+# FLAGS = flags.FLAGS
 
-flags.DEFINE_float('mortgage_principal', 500000, 'Loan amount (principal)')
-flags.DEFINE_float('interest_rate', 0.04, 'Interest rate for mortage amortization')
-flags.DEFINE_integer('mortgage_years', 30, 'Mortgage length')
-flags.DEFINE_string('interest_type', 'fixed', 'Interest rate type - fixed or variable')
-flags.DEFINE_string('variable_interest_fluct', 'conservative', 'Interest rate fluctuation / behaviour setting')
-flags.DEFINE_float('additional_principal', 0, 'Additional principal payment above minimum repayment')
-flags.DEFINE_integer('annual_payments', 12, 'Number of payments (and compounding events) per year')
+# flags.DEFINE_float('mortgage_principal', 500000, 'Loan amount (principal)')
+# flags.DEFINE_float('interest_rate', 0.04, 'Interest rate for mortage amortization')
+# flags.DEFINE_integer('mortgage_years', 30, 'Mortgage length')
+# flags.DEFINE_string('interest_type', 'fixed', 'Interest rate type - fixed or variable')
+# flags.DEFINE_string('variable_interest_fluct', 'conservative', 'Interest rate fluctuation / behaviour setting')
+# flags.DEFINE_float('additional_principal', 0, 'Additional principal payment above minimum repayment')
+# flags.DEFINE_integer('annual_payments', 12, 'Number of payments (and compounding events) per year')
 
-def amortize(argv, principal,
+#%%
+def amortize(principal,
              interest_rate,
              years,
              var_interest_rate = False,
@@ -80,7 +84,7 @@ def amortize(argv, principal,
         start_date += relativedelta(months=1)
         beg_balance = end_balance
 
-
+#%%
 def amortize_format(df):
     """
     Format amortize generator.
@@ -91,26 +95,69 @@ def amortize_format(df):
     df.index = pd.to_datetime(df.index)
     return df
 
-def mc_sim(argv, iters=10):
+#%%
+def mc_sim(iters=10):
     """
     """
-    sim_results = {i: amortize_format(pd.DataFrame(amortize(argv, 700000, 0.04, 30, 
+    sim_results = {str(i): amortize_format(pd.DataFrame(amortize(700000, 0.04, 30, 
                                      var_interest_rate=True,
                                      interest_rate_fluct='conservative',
                                      addl_principal=200,
                                      start_date=date(2019, 12,1))))['Interest'] for i in range(iters)}
-    # sim_results_formatted = {}
+    # Convert sim_results into one DataFrame
+    df = pd.DataFrame.from_dict(sim_results, orient='index').T
+    df.index = pd.to_datetime(df.index)
     
-    return sim_results
+    return df
+
+#%%
+def visualise(df):
+    """
+    Plotting tool to visualise results.
+    """
+    # print(df.head())
+    # print(df.info())
+    print(len(df.index))
+    # print(df.columns.values)
+    # df.plot(x=df.index.values, y=df.columns.values, title='Temporal Interest')
+    plt.scatter(x=df.index.values, y=df.columns[0])
+    plot.show()
 
 
-def main(argv):
+#%%
+sim_results = mc_sim()
+sim_results.fillna(0, inplace=True)
+print(sim_results)
+sim_results.plot()
+
+#%%
+df_hold = sim_results.copy()
+df_hold['mean'] = df_hold.mean(axis=1)
+# print(sim_results['mean'].describe())
+plt.plot(sim_results, alpha=0.2)
+plt.plot(df_hold['mean'])
+
+#%% 
+q25 = sim_results.quantile(0.25, axis=1)
+q75 = sim_results.quantile(0.75, axis=1)
+plt.plot(q25)
+plt.plot(q75)
+plt.plot(df_hold['mean'])
+
+
+
+#%%
+def main():
     
-    sim_results = mc_sim(argv)
-    print(sim_results[0].head(50))
-    
-    
+    sim_results = mc_sim()
     
 
+    sim_results.plot()
+    
+    # print(sim_results.head(50))
+    # visualise(sim_results)
+    
+
+#%%
 if __name__ == '__main__':
     app.run(main)
