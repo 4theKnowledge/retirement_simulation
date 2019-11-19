@@ -9,7 +9,7 @@ from collections import OrderedDict
 from dateutil.relativedelta import *
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
-fig = matplotlib.pyplot.gcf()
+fig = plt.gcf()
 fig.set_size_inches(18.5, 10.5, forward=True)
 
 from absl import flags
@@ -110,6 +110,18 @@ def mc_sim(iters=10):
     
     return df
 
+
+def compute_stats(df):
+    """
+    """
+    
+    df.fillna(0, inplace=True)
+    df['mean'] = df.mean(axis=1)
+    df['q25'] = df.quantile(0.25, axis=1)
+    df['q75'] = df.quantile(0.75, axis=1)
+    
+    return df
+
 #%%
 def visualise(df):
     """
@@ -124,38 +136,34 @@ def visualise(df):
     plot.show()
 
 
-#%%
-sim_results = mc_sim()
-sim_results.fillna(0, inplace=True)
-print(sim_results)
-sim_results.plot()
+# #%%
+# sim_results = mc_sim()
+# sim_results.fillna(0, inplace=True)
+# print(sim_results)
+# sim_results.plot()
+
+# #%%
+# df_hold = sim_results.copy()
+# df_hold['mean'] = df_hold.mean(axis=1)
+# # print(sim_results['mean'].describe())
+# plt.plot(sim_results, alpha=0.2)
+# plt.plot(df_hold['mean'])
+
+# #%% 
+# q25 = sim_results.quantile(0.25, axis=1)
+# q75 = sim_results.quantile(0.75, axis=1)
+# plt.plot(q25)
+# plt.plot(q75)
+# plt.plot(df_hold['mean'])
 
 #%%
-df_hold = sim_results.copy()
-df_hold['mean'] = df_hold.mean(axis=1)
-# print(sim_results['mean'].describe())
-plt.plot(sim_results, alpha=0.2)
-plt.plot(df_hold['mean'])
-
-#%% 
-q25 = sim_results.quantile(0.25, axis=1)
-q75 = sim_results.quantile(0.75, axis=1)
-plt.plot(q25)
-plt.plot(q75)
-plt.plot(df_hold['mean'])
-
-
-
-#%%
-def main():
+def main(argv):
     
-    sim_results = mc_sim()
+    df = mc_sim()
+    df = compute_stats(df)
+    # visualise(df)
+    plt.plot(df['mean'])
     
-
-    sim_results.plot()
-    
-    # print(sim_results.head(50))
-    # visualise(sim_results)
     
 
 #%%
