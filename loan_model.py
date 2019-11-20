@@ -17,94 +17,81 @@ FLAGS = flags.FLAGS
 flags.DEFINE_float('loan_amt', 500000, 'Loan amount (principal)')
 flags.DEFINE_float('loan_ir', 0.04, 'Interest rate for mortage amortization')
 flags.DEFINE_integer('loan_length_yrs', 30, 'Mortgage length')
-flags.DEFINE_string('interest_type', 'fixed', 'Interest rate type - fixed or variable')
+flags.DEFINE_boolean('var_ir', False, 'Interest rate type - fixed (False) or variable (True)')
 flags.DEFINE_string('var_ir_fluct', 'conservative', 'Interest rate fluctuation / behaviour setting')
 flags.DEFINE_float('add_payment', 0, 'Additional principal payment above minimum repayment')
 flags.DEFINE_integer('pa_payments', 12, 'Number of payments (and compounding events) per annum')
-flags.DEFINE_float('lump_sum', 0, 'Value of lump sum to apply to loan')
-flags.DEFINE_string('lump_sum_dt', None, 'Date that lump sum is applied to loan')
-
-loan_amt = 300000
-loan_ir = 0.04
-loan_length_yrs = 30
-var_ir = True
-var_ir_fluct = 'conservative'
-add_principal = 500
-loan_start = date(2020,1,1)
-lump_sum = 25000
-lump_sum_dt = date(2022,6,1)
+flags.DEFINE_string('loan_start_dt', '01-01-2020', 'Start date of loan')
 
 
+def amortize(argv, lump_sum=0, lump_sum_dt=None):
 
-def amortize(principal,
-             interest_rate,
-             years,
-             var_interest_rate = False,
-             interest_rate_fluct = 'aggressive',
-             addl_principal=0,
-             annual_payments=12,
-             start_date=date.today(),
-             lump_sum_paymnt = 0,
-             lump_sum_date = date(2050,1,1)):
-
-    init_addl_principal = addl_principal
+    init_addl_principal = FLAGS.add_payment
     
-    pmt = -round(np.pmt(interest_rate/annual_payments, years*annual_payments, principal), 2)
+    pmt = -round(np.pmt(FLAGS.loan_ir/FLAGS.pa_payments, FLAGS.loan_length_yrs*FLAGS.pa_payments, FLAGS.loan_amt), 2)
     # initialize the variables to keep track of the periods and running balances
     p = 1
-    beg_balance = principal
-    end_balance = principal
+    # Init temporary variables with default flag values; this is because we do not want to override the flag values 
+    beg_balance = FLAGS.loan_amt
+    end_balance = FLAGS.loan_amt
+    start_date = datetime.strptime(FLAGS.loan_start_dt, "%d-%m-%Y")
+    if lump_sum_dt:
+        lump_sum_dt = datetime.strptime(lump_sum_dt, "%d-%m-%Y")
+    var_ir = FLAGS.var_ir
+    loan_ir = FLAGS.loan_ir
+    add_payment = FLAGS.add_payment
+    loan_amt = FLAGS.loan_amt
     
     while end_balance > 0:
         # Fluctuate variable interest...
-        if var_interest_rate and start_date.month == 6 and interest_rate < 0.06:
+        if var_ir and start_date.month == 6 and loan_ir < 0.06:
 #             print('Modifying interest rate...')
             # Assumes that interest rate changes occur mid-year
-            if interest_rate_fluct == 'chaotic':
-                interest_rate = interest_rate * np.random.uniform(0.5, 1.5)
-            if interest_rate_fluct == 'aggressive':
-                interest_rate = interest_rate * np.random.uniform(0.8,1.2)
-            if interest_rate_fluct == 'moderate':
-                interest_rate = interest_rate * np.random.uniform(0.875,0.125)
-            if interest_rate_fluct == 'conservative':
-                interest_rate = interest_rate * np.random.uniform(0.95,1.05)
-#             print(interest_rate)
+            if FLAGS.var_ir_fluct == 'chaotic':
+                loan_ir = loan_ir * np.random.uniform(0.5, 1.5)
+            if FLAGS.var_ir_fluct == 'aggressive':
+                loan_ir = loan_ir * np.random.uniform(0.8,1.2)
+            if FLAGS.var_ir_fluct == 'moderate':
+                loan_ir = loan_ir * np.random.uniform(0.875,0.125)
+            if FLAGS.var_ir_fluct == 'conservative':
+                loan_ir = loan_ir * np.random.uniform(0.95,1.05)
+#             print(loan_ir)
         
         # Recalculate the interest based on the current balance
-        interest = round(((interest_rate/annual_payments) * beg_balance), 2)
+        interest = round(((loan_ir/FLAGS.pa_payments) * beg_balance), 2)
 
         # Determine payment based on whether or not this period will pay off the loan
         pmt = min(pmt, beg_balance + interest)
-        principal = pmt - interest
+        loan_amt = pmt - interest
         
-
         # Ensure additional payment gets adjusted if the loan is being paid off.
         # If the difference between the beginning balance and principal is < additional payment, reduce additional
         # payment to match remaining balance.
         
         # Add lump-sum event (Assumes that payment occurs at month begin)
-        if start_date == lump_sum_date:
+        if start_date == lump_sum_dt:
             
-            adhoc_paymnt = min((addl_principal+lump_sum_paymnt), beg_balance - principal)
+            adhoc_paymnt = min((add_payment + lump_sum), beg_balance - loan_amt)
             # print(f'Adhoc - Lump sum payment: ${adhoc_paymnt:0.0f}')
-            end_balance = beg_balance - (principal + adhoc_paymnt)
+            end_balance = beg_balance - (loan_amt + adhoc_paymnt)
         else:
-            addl_principal = min(addl_principal, beg_balance - principal)
-            end_balance = beg_balance - (principal + addl_principal)
+            FLAGS.add_payment = min(add_payment, beg_balance - loan_amt)
+            end_balance = beg_balance - (loan_amt + add_payment)
             adhoc_paymnt = 0
 
-        yield OrderedDict([('Month',start_date),
+        yield OrderedDict([('Month', start_date),
                            ('Period', p),
                            ('Begin Balance', beg_balance),
                            ('Payment', pmt),
-                           ('Principal', principal),
+                           ('Principal', FLAGS.loan_amt),
                            ('Interest', interest),
-                           ('Additional_Payment', addl_principal),
+                           ('Interest_Rate', loan_ir),
+                           ('Additional_Payment', add_payment),
                            ('Adhoc Payment', adhoc_paymnt),
                            ('End Balance', end_balance)])
         
-        if addl_principal > (beg_balance - principal):
-            addl_principal = init_addl_principal
+        if add_payment > (beg_balance - loan_amt):
+            add_payment = init_addl_principal
         
         # Increment the counter, balance and date
         p += 1
@@ -123,7 +110,7 @@ def amortize_format(df):
     return df
 
 
-def loan_comparison(df_ls, df_nls):
+def loan_comparison(argv, df_ls, df_nls):
     """
     """
     
@@ -137,48 +124,44 @@ def loan_comparison(df_ls, df_nls):
     total_interest_nls = df_nls['Interest'].sum()
     print(f'Interest Saved: ${(total_interest_nls - total_interest_ls):0.0f}')
     
+    total_cost_ls = total_interest_ls + FLAGS.loan_amt
+    total_cost_nls = total_interest_nls + FLAGS.loan_amt 
+    print(f'Total Loan Cost: NLS ${total_cost_nls:0.0f} LS ${total_cost_ls:0.0f}')
+    
 
 def loan_plot(df_ls, df_nls):
     """
     """
     
-    plt.scatter(x=df_ls['Month'], y=df_ls['Interest'], color='g')
-    plt.scatter(x=df_nls['Month'], y=df_nls['Interest'], color='r')
-    plt.legend(['Lump Sum', 'No Lump Sum'])
-    plt.ylabel('Interest ($)')
-    plt.xlabel('Time (Months)')
+    fig, axs = plt.subplots(2, 1)
+    axs[0].scatter(x=df_ls['Month'], y=df_ls['Interest'], color='g')
+    axs[0].scatter(x=df_nls['Month'], y=df_nls['Interest'], color='r')
+    axs[0].legend(['Lump Sum', 'No Lump Sum'])
+    axs[0].set_ylabel('Interest ($)')
+    axs[0].set_xlabel('Time (Months)')
+    
+    axs[1].scatter(x=df_ls['Month'], y=df_ls['Interest_Rate'] * 100, color='g')
+    axs[1].scatter(x=df_nls['Month'], y=df_nls['Interest_Rate'] * 100, color='r')
+    axs[1].legend(['Lump Sum', 'No Lump Sum'])
+    axs[1].set_ylim([-10,10])
+    axs[1].set_ylabel('Interest Rate (%)')
+    axs[1].set_xlabel('Time (Months)')
+    
+    fig.tight_layout()
     plt.show()
 
 
-loan_amt = 300000
-loan_ir = 0.04
-loan_length_yrs = 30
-var_ir = True
-var_ir_fluct = 'conservative'
-add_principal = 500
-loan_start = date(2020,1,1)
-lump_sum = 25000
-lump_sum_dt = date(2022,6,1)
 
-# Lump Sum (ls)
-loan_ls = pd.DataFrame(amortize(loan_amt, loan_ir, loan_length_yrs,
-                              var_interest_rate=var_ir,
-                              interest_rate_fluct=var_ir_fluct,
-                              addl_principal=add_principal,
-                              start_date=loan_start,
-                              lump_sum_paymnt = lump_sum,
-                              lump_sum_date=lump_sum_dt
-                              ))
-# No Lump Sum (nls)
-loan_nls = pd.DataFrame(amortize(loan_amt, loan_ir, loan_length_yrs,
-                              var_interest_rate=var_ir,
-                              interest_rate_fluct=var_ir_fluct,
-                              addl_principal=add_principal,
-                              start_date=loan_start,
-                              lump_sum_paymnt=0,
-                              lump_sum_date=None
-                              ))
+def main(argv):
+    # Lump Sum (ls)
+    loan_ls = pd.DataFrame(amortize(argv))
+    # print(loan_ls.head(25))
+    # No Lump Sum (nls)
+    loan_nls = pd.DataFrame(amortize(argv, lump_sum = 200000, lump_sum_dt = '01-06-2022'))
+    print(loan_nls.head(25))
+    loan_comparison(argv, loan_ls, loan_nls)
+    loan_plot(loan_ls, loan_nls)
+    
 
 if __name__ == '__main__':
-    loan_comparison(loan_ls, loan_nls)
-    loan_plot(loan_ls, loan_nls)
+    app.run(main)
