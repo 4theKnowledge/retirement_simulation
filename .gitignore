@@ -1,5 +1,7 @@
 # Ignore these directories
 UI/
+resources/
+flask/
 
 # Files to ignore
 *.xlsx
