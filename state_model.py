@@ -87,7 +87,7 @@ def super_model(model_phase, annual_income, monthly_super_contrib, initial_super
         # Returns - cumulative value of superannuation
         if cumulative_super_bal == 0:
             cumulative_super_val += monthly_super_contrib + initial_super_bal
-            print('in bal = 0 loop, cum_val: ', cumulative_super_val)
+            # print('in bal = 0 loop, cum_val: ', cumulative_super_val)
         else:
             cumulative_super_val = (cumulative_super_val + monthly_super_contrib - super_fees) * (1 + (0.06 / 12)) # 8% return p.a.
             # cumulative_super_val + monthly_super_contrib
@@ -119,21 +119,70 @@ def super_model(model_phase, annual_income, monthly_super_contrib, initial_super
         return monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val, drawdown_amt
 
 
-def expenses_model(model_phase):
+def expenses_model(model_phase, cumulative_savings_val, monthly_disposable_income, begin_balance):
+    """
+    Emulates general expenses in both phases 1 and 2. It is assumed that expenses reduce by 50% within retirement.
+    Functionality for random events to occur are added. These occur at a cost of 10x the expected expense within that month with
+    a very low probability of occurence over the model timeline. The disposable income is tested to see if it can absorb the event, otherwise the savings model is used to buffer these random events, if the savings
+    is not sufficient then a loan is automatically generated to cover the difference (current dev just adds to existing loan principal...) (if allowed; theres a selection for loan generation or family/friend buffer for certain amounts)
+    
+    Note: the disposable income accessible is from the previous month... similarly for the cum sum savings
+    """
     
     random_event = True
     
-    if model_phase == 1:
-        expenses = 1000*np.random.uniform(0.75, 1.25)
+    if model_phase == 1:       
         if random_event and np.random.uniform(0,1) < 0.01:
-            expenses *= 10
-        return expenses
+            expenses = 2000*np.random.uniform(0.75, 1.25)
+            expenses_re = expenses*np.random.randint(3, 30)
+            expenses += expenses_re
+            if monthly_disposable_income > expenses:
+                print(f'Phase 1: Absorbing expenses of {expenses} into disposable income')
+                return expenses, cumulative_savings_val, begin_balance
+            if monthly_disposable_income < expenses < cumulative_savings_val:
+                print(f'Phase 1: Paying expenses of {expenses} with savings')
+                cumulative_savings_val -= expenses_re
+                expenses_re = 0
+                expenses += expenses_re
+                return expenses, cumulative_savings_val, begin_balance
+            if cumulative_savings_val < expenses:
+                print(f'Phase 1: Absorbing expenses of {expenses} by adding to existing loan principal')
+                begin_balance += expenses_re
+                expenses_re = 0
+                expenses += expenses_re
+                return expenses, cumulative_savings_val, begin_balance
+        else:
+            # if RE is false or doesn't meet above criteria...
+            expenses = 2000*np.random.uniform(0.75, 1.25)
+            return expenses, cumulative_savings_val, begin_balance
+    
     if model_phase == 2:
-        expenses = 500*np.random.uniform(0.75, 1.25)
         if random_event and np.random.uniform(0,1) < 0.01:
-            expenses *= 10
-        return expenses
-
+            expenses = 1000*np.random.uniform(0.75, 1.25)
+            expenses_re = expenses*np.random.randint(3, 15)
+            expenses += expenses_re
+            if monthly_disposable_income > expenses:
+                print(f'Phase 2: Absorbing expenses of {expenses} into disposable income')
+                return expenses, cumulative_savings_val, begin_balance
+            if monthly_disposable_income < expenses <= cumulative_savings_val:
+                print(f'Phase 2: Paying expenses of {expenses} with savings')
+                cumulative_savings_val -= expenses_re
+                expenses_re = 0
+                expenses += expenses_re
+                return expenses, cumulative_savings_val, begin_balance
+            if cumulative_savings_val < expenses:
+                # TODO: Phase 2 would generate a new loan or tap their superannuation if a loan doesn't exist
+                print(f'Phase 2: Absorbing expenses of {expenses} by adding to existing loan principal')
+                
+                begin_balance += expenses_re
+                expenses_re = 0
+                expenses += expenses_re
+                return expenses, cumulative_savings_val, begin_balance
+                
+        else:
+            # if RE is false or doesn't meet above criteria...
+            expenses = 1000*np.random.uniform(0.75, 1.25)
+            return expenses, cumulative_savings_val, begin_balance
 
 def loan_model(principal, interest_rate, annual_payments, years, period, pmt, begin_balance, end_balance):
     
@@ -153,22 +202,26 @@ def loan_model(principal, interest_rate, annual_payments, years, period, pmt, be
     return period, begin_balance, pmt, interest
     
 
-def saving_model(initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val):
+def saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val):
     """
     Research into best % saving recommendations
     """
     
+    
     # Amount saved per month
-    saving_proportion = 0.25    # 25 %
-    monthly_saved_amt = saving_proportion * monthly_disposable_income
+    if model_phase == 1:
+        saving_proportion = 0.25    # 25 %
+        monthly_saved_amt = saving_proportion * monthly_disposable_income
+    else:
+        # TODO: REVISE THIS LOGIC TO SEE IF IT MAKES SENSE TO ALLOW FOR PHASE 2
+        monthly_saved_amt = 0
 
     # Interest earned on savings
     if cumulative_savings_bal == 0:
         cumulative_savings_val += monthly_saved_amt + initial_savings_bal
-        print('in bal = 0 loop, cum_val: ', cumulative_savings_val)
+        # print('in bal = 0 loop, cum_val: ', cumulative_savings_val)
     else:
         cumulative_savings_val = (cumulative_savings_val + monthly_saved_amt) * (1 + (0.03 / 12)) # 3% return p.a. assumes term deposit
-        # cumulative_super_val + monthly_super_contrib
     
     # Cumulative savings
     if cumulative_savings_bal == 0:
@@ -206,8 +259,8 @@ def phase_model(start_date, start_annual_income):
     # SAVINGS INIT DETAILS
     initial_savings_bal = 5000
     cumulative_savings_bal = 0  # w/o compound interest
-    cumulative_savings_val = 0  # w/ compound interest 
-    
+    cumulative_savings_val = 0  # w/ compound interest
+    monthly_disposable_income = 0   # init
     
     # PHASE 1
     temp_dt_p1 = start_date # init
@@ -223,16 +276,17 @@ def phase_model(start_date, start_annual_income):
         monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val = super_model(model_phase, start_annual_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val)
         
         # LIVING EXPENSES
-        monthly_expenses = expenses_model(model_phase)
+        monthly_expenses, cumulative_savings_val, begin_balance = expenses_model(model_phase, cumulative_savings_val, monthly_disposable_income, begin_balance)
         
         # LOAN (MORTGAGE)
         period, begin_balance, pmt, interest = loan_model(principal, interest_rate, annual_payments, years, period, pmt, begin_balance, end_balance)
     
         # DISPOSABLE INCOME
+        # print(monthly_income, monthly_expenses, pmt)
         monthly_disposable_income = monthly_income - monthly_expenses - pmt
         
         # SAVINGS
-        monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val = saving_model(initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val)
+        monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val = saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val)
 
         yield OrderedDict([('Date', temp_dt_p1), 
                            ('Model_Phase', model_phase),
@@ -242,6 +296,7 @@ def phase_model(start_date, start_annual_income):
                            ('Super_Balance_Contrib', cumulative_super_bal),
                            ('Super_Fees', super_fees),
                            ('Super_Balance_Value', cumulative_super_val),
+                           ('Super_Drawdown', 0),
                            ('Expenses', monthly_expenses),
                            ('Loan_Period', period),
                            ('Loan_Begin_Balance', begin_balance),
@@ -256,11 +311,18 @@ def phase_model(start_date, start_annual_income):
 
     # PHASE 2
     temp_dt_p2 = end_date_p1    # init
+
+    # SAVINGS INIT
+    initial_savings_bal = 0 # no more savings at start of retirement phase
+
     while temp_dt_p2 <= end_date_p2:
         model_phase = 2
         
         # EXPENSES
-        monthly_expenses = expenses_model(model_phase)
+        monthly_expenses, cumulative_savings_val, _ = expenses_model(model_phase, cumulative_savings_val, monthly_disposable_income, begin_balance)
+        
+        # SAVINGS
+        monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val = saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val)
         
         # SUPER DRAWDOWN
         monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val, drawdown_amt = super_model(model_phase, start_annual_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val)
@@ -276,13 +338,16 @@ def phase_model(start_date, start_annual_income):
                            ('Super_Balance_Contrib', 0),
                            ('Super_Fees', super_fees),
                            ('Super_Balance_Value', cumulative_super_val),
+                           ('Super_Drawdown', drawdown_amt),
                            ('Expenses', monthly_expenses),
                            ('Loan_Period', 0),
                            ('Loan_Begin_Balance', 0),
                            ('Loan_Payment', 0),
                            ('Loan_Interest', 0),
-                           ('Disposable_Income', monthly_disposable_income)])
-        
+                           ('Disposable_Income', monthly_disposable_income),
+                           ('Amount_Saved', 0),
+                           ('Savings_Bal', cumulative_savings_bal),
+                           ('Savings_Val', cumulative_savings_val)])
         temp_dt_p2 += relativedelta(months=1)
 
 
@@ -296,17 +361,27 @@ def main():
     print(df.head(12))
     print(df.tail(12))
     
-    plt.subplot(311)
+    plt.subplot(511)
     plt.plot(df['Date'], df['Super_Balance_Value'])
     plt.ylabel('$')
     plt.title('Super Balance')
     
-    plt.subplot(312)
+    plt.subplot(512)
     plt.plot(df['Date'], df['Savings_Val'])
     plt.ylabel('$')
     plt.title('Savings')
     
-    plt.subplot(313)
+    plt.subplot(513)
+    plt.plot(df['Date'], df['Loan_Begin_Balance'])
+    plt.ylabel('$')
+    plt.title('Loan Principal')
+    
+    plt.subplot(514)
+    plt.plot(df['Date'], df['Super_Drawdown'])
+    plt.ylabel('$')
+    plt.title('Super Drawdown')
+    
+    plt.subplot(515)
     plt.plot(df['Date'], df['Disposable_Income'])
     plt.xlabel('Date')
     plt.ylabel('$')
