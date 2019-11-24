@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>{{ title }}</title>
+        <link rel='stylesheet' href="/static/css/main.css" />
+    <body>
+        <h1>{{ title }}</h1>
+        <button id="click">Load Profile</button>
+        <button id="readProfile" style='display: none'>Read Profile</button>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <!-- Need to load ajax before impementing scripts -->
+        <script>
+            $('#click').click(function () {
+                $.ajax({
+                type: 'GET',
+                url: '/data',
+                success: function (response) {
+                    // $('h1').text(response);
+                    // alert(response);
+                    // alert(JSON.stringify(response))
+                    localStorage.setItem('profile', JSON.stringify(response));
+                    // localStorage.clear
+                    $('#readProfile').show();
+                    $('#click').hide();
+                    }
+                });
+            });
+
+            $('#readProfile').click( function () {
+                let profile = localStorage.getItem('profile');
+                alert(profile);
+
+                alert('changing to an object now');
+                alert(JSON.parse(localStorage.getItem('profile')));
+            });
+
+        </script>
+    
+    </body>
+    </head>
+</html>
+
+
