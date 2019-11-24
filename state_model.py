@@ -63,6 +63,8 @@ def super_model(model_phase, annual_income, monthly_super_contrib, initial_super
     """
     
     # TODO CONVERT ALL INFORMATION TO TODAYS DOLLARS AS PER THE ASSUMPTIONS ON: https://www.moneysmart.gov.au/tools-and-resources/calculators-and-apps/superannuation-calculator
+    #           Also, shift interest calc to be on the last months value not the same months value as this is more realistic.
+    
     
     # Monthly Contribution from Employer.
     if model_phase == 1:
@@ -119,11 +121,17 @@ def super_model(model_phase, annual_income, monthly_super_contrib, initial_super
 
 def expenses_model(model_phase):
     
+    random_event = True
+    
     if model_phase == 1:
         expenses = 1000*np.random.uniform(0.75, 1.25)
+        if random_event and np.random.uniform(0,1) < 0.01:
+            expenses *= 10
         return expenses
     if model_phase == 2:
         expenses = 500*np.random.uniform(0.75, 1.25)
+        if random_event and np.random.uniform(0,1) < 0.01:
+            expenses *= 10
         return expenses
 
 
@@ -145,6 +153,32 @@ def loan_model(principal, interest_rate, annual_payments, years, period, pmt, be
     return period, begin_balance, pmt, interest
     
 
+def saving_model(initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val):
+    """
+    Research into best % saving recommendations
+    """
+    
+    # Amount saved per month
+    saving_proportion = 0.25    # 25 %
+    monthly_saved_amt = saving_proportion * monthly_disposable_income
+
+    # Interest earned on savings
+    if cumulative_savings_bal == 0:
+        cumulative_savings_val += monthly_saved_amt + initial_savings_bal
+        print('in bal = 0 loop, cum_val: ', cumulative_savings_val)
+    else:
+        cumulative_savings_val = (cumulative_savings_val + monthly_saved_amt) * (1 + (0.03 / 12)) # 3% return p.a. assumes term deposit
+        # cumulative_super_val + monthly_super_contrib
+    
+    # Cumulative savings
+    if cumulative_savings_bal == 0:
+        cumulative_savings_bal += monthly_saved_amt + initial_savings_bal
+    else:
+        cumulative_savings_bal += monthly_saved_amt
+    
+    return  monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val
+    
+    
 def phase_model(start_date, start_annual_income):
     
     # TODO: integrated model types into phase model
@@ -166,8 +200,14 @@ def phase_model(start_date, start_annual_income):
     # SUPER INIT DETAILS
     initial_super_bal = 35000
     monthly_super_contrib = 0
-    cumulative_super_bal = 0
-    cumulative_super_val = 0
+    cumulative_super_bal = 0  # w/o compound interest
+    cumulative_super_val = 0  # w/ compound interest 
+    
+    # SAVINGS INIT DETAILS
+    initial_savings_bal = 5000
+    cumulative_savings_bal = 0  # w/o compound interest
+    cumulative_savings_val = 0  # w/ compound interest 
+    
     
     # PHASE 1
     temp_dt_p1 = start_date # init
@@ -188,6 +228,12 @@ def phase_model(start_date, start_annual_income):
         # LOAN (MORTGAGE)
         period, begin_balance, pmt, interest = loan_model(principal, interest_rate, annual_payments, years, period, pmt, begin_balance, end_balance)
     
+        # DISPOSABLE INCOME
+        monthly_disposable_income = monthly_income - monthly_expenses - pmt
+        
+        # SAVINGS
+        monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val = saving_model(initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val)
+
         yield OrderedDict([('Date', temp_dt_p1), 
                            ('Model_Phase', model_phase),
                            ('Earned_Income', monthly_income),
@@ -200,7 +246,11 @@ def phase_model(start_date, start_annual_income):
                            ('Loan_Period', period),
                            ('Loan_Begin_Balance', begin_balance),
                            ('Loan_Payment', pmt),
-                           ('Loan_Interest', interest)])
+                           ('Loan_Interest', interest),
+                           ('Disposable_Income', monthly_disposable_income),
+                           ('Amount_Saved', monthly_saved_amt),
+                           ('Savings_Bal', cumulative_savings_bal),
+                           ('Savings_Val', cumulative_savings_val)])
     
         temp_dt_p1 += relativedelta(months=1)
 
@@ -209,46 +259,54 @@ def phase_model(start_date, start_annual_income):
     while temp_dt_p2 <= end_date_p2:
         model_phase = 2
         
+        # EXPENSES
         monthly_expenses = expenses_model(model_phase)
         
+        # SUPER DRAWDOWN
         monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val, drawdown_amt = super_model(model_phase, start_annual_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val)
         
+        # DISPOSABLE INCOME
+        monthly_disposable_income = drawdown_amt - monthly_expenses
+               
         yield OrderedDict([('Date', temp_dt_p2), 
                            ('Model_Phase', model_phase),
-                           ('Expenses', monthly_expenses),
+                           ('Earned_Income', 0),
+                           ('Earned_Income_Tax', 0),
+                           ('Employer_Super_Contrib', 0),
+                           ('Super_Balance_Contrib', 0),
                            ('Super_Fees', super_fees),
                            ('Super_Balance_Value', cumulative_super_val),
-                           ('Super_Drawdown', drawdown_amt)
-                           ])
+                           ('Expenses', monthly_expenses),
+                           ('Loan_Period', 0),
+                           ('Loan_Begin_Balance', 0),
+                           ('Loan_Payment', 0),
+                           ('Loan_Interest', 0),
+                           ('Disposable_Income', monthly_disposable_income)])
         
         temp_dt_p2 += relativedelta(months=1)
 
-
-def agg_function(df):
-    
-    # print(df.columns)
-    # Replace NaNs with 0s
-    df.fillna(0, inplace=True)
-    df['Disposable_Income'] = df['Earned_Income'] + df['Super_Drawdown'] - df['Expenses'] - df['Loan_Payment']
-
-    return df
 
 def main(): 
     
     df = pd.DataFrame(phase_model(start_date, income))
     # Aggregation calculations are done after monthly models are generated...
-    df = agg_function(df)
+    # df = agg_function(df)
 
     # FOR DEBUGGING
     print(df.head(12))
     print(df.tail(12))
     
-    plt.subplot(211)
+    plt.subplot(311)
     plt.plot(df['Date'], df['Super_Balance_Value'])
-
     plt.ylabel('$')
     plt.title('Super Balance')
-    plt.subplot(212)
+    
+    plt.subplot(312)
+    plt.plot(df['Date'], df['Savings_Val'])
+    plt.ylabel('$')
+    plt.title('Savings')
+    
+    plt.subplot(313)
     plt.plot(df['Date'], df['Disposable_Income'])
     plt.xlabel('Date')
     plt.ylabel('$')
