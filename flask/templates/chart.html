@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <title>{{ title }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+<body>
+<div class="jumbotron text-center" style="margin-bottom:0">
+    <h1>Lets Simulate.</h1>
+    <p>Dynamic Personal Financial Forecasting Simulator</p> 
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>                        
+        </button>
+        <a class="navbar-brand" href="#">x.x</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Social Media 1</a></li>
+            <li><a href="#">Social Media 2</a></li>
+            <li><a href="#">Social Media 3</a></li>
+        </ul>
+        </div>
+    </div>
+</nav>
+<!-- Navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+        <h2>Basic Information Form</h2>
+        <p>Enter basic information to permit simulation</p>
+        <h5>Annual Income: </h5>
+        <form method="POST">
+            <input name="text">
+            <input type="submit">
+        </form>
+        <h5>Current Age: </h5>
+        <form method="POST">
+                <input name="text">
+                <input type="submit">
+        </form>
+        <h5>More Details...:</h5>
+        <form method="POST">
+                <input name="text">
+                <input type="submit">
+        </form>
+        <h3>Simulation</h3>
+        <button type="button" class="btn btn-primary btn-block">Simulate</button>
+        <h3>Plot Types</h3>
+        <p>Select the plot of interest below</p>
+        <ul class="nav nav-pills nav-stacked">
+            <li><button id="superBalClick" type="button" class="btn btn-primary btn-block">Super Balance</button></li>
+            <li><button type="button" class="btn btn-primary btn-block">Savings</button></li>
+            <li><button type="button" class="btn btn-primary btn-block">Loan Principal</button></li>
+            <li><button type="button" class="btn btn-primary btn-block">Super Drawdown</button></li>
+            <li><button type="button" class="btn btn-primary btn-block">Disposable Income</button></li>
+        </ul>
+        <hr class="hidden-sm hidden-md hidden-lg">
+    </div>
+    <div class="col-sm-8">
+        <h2>Plot Heading</h2>
+        <h5>Plot description</h5>
+        <p>Some descriptive text..</p>
+        <canvas id="chart1"></canvas>
+        <br>
+        </div>
+    </div>
+</div>
+
+<!-- <div>
+    <button id='superBalClick'>Super Balance</button>
+</div> -->
+
+<!-- <div class="content">
+    <div style="width: 100%">
+        <canvas id='chart1'></canvas>
+    </div>
+</div> -->
+
+    <!-- Loading chart.js cdn -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <!-- Executing chart.js scripts after cdn load -->
+    <script>
+        document.getElementById('superBalClick').onclick = function(labels, super_bal_val) {
+            var ctx = document.getElementById('chart1').getContext('2d');
+            var chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: {
+                    labels: [{% for item in labels %} "{{ item }}", {% endfor %}],
+                    datasets: [{
+                        label: 'Super Balance',
+                        backgroundColor: 'rgb(255, 99, 132, 0.3)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        data: [
+                            {% for item in super_bal_val %} "{{ item }}", {% endfor %}],
+                        pointRadius: 0,
+                        fill: 'start',
+                    }
+                ]
+                },
+
+                // Configuration options go here
+                options: {}
+            });
+        }
+    </script>
+</body>
+</html>

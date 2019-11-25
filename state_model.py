@@ -356,6 +356,7 @@ def main():
     df = pd.DataFrame(phase_model(start_date, income))
     # Aggregation calculations are done after monthly models are generated...
     # df = agg_function(df)
+    df.to_csv('simulation_results.csv', index=False)
 
     # FOR DEBUGGING
     print(df.head(12))

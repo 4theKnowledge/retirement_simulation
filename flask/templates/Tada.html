@@ -1,0 +1,513 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title>Simulate</title>
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+	<!-- Bootstrap core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Material Design Bootstrap -->
+	<link href="css/mdb.min.css" rel="stylesheet">
+	<!-- Your custom styles (optional) -->
+	<!-- <link href="css/style.css" rel="stylesheet">-->
+	<link href="css/style.css" rel="stylesheet">
+	<style type="text/css">
+
+		html,
+		body,
+		header,
+		.view {
+			height: 100%;
+		}
+
+		@media (max-width: 740px) {
+
+			html,
+			body,
+			header,
+			.view {
+				height: 1050px;
+			}
+		}
+
+		@media (min-width: 800px) and (max-width: 850px) {
+
+			html,
+			body,
+			header,
+			.view {
+				height: 700px;
+			}
+		}
+
+		@media (min-width: 800px) and (max-width: 850px) {
+			.navbar:not(.top-nav-collapse) {
+				background: #1C2331 !important;
+			}
+		}
+	</style>
+</head>
+
+<body data-spy="scroll" data-target=".navbar" data-offset="30" style="position: relative;">
+
+		<!-- Navbar -->
+		<nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
+			<div class="container">
+				<!-- Brand -->
+				<a class="navbar-brand" href="landing-page.html" target="_blank">
+					<strong>MDB</strong>
+				</a>
+				<!-- Collapse -->
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+						aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<!-- Links -->
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<!-- Left -->
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="landing-page.html">
+								Home
+								<span class="sr-only">(current)</span>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="landing-page.html">Part 1</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="landing-page.html">Part 2</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="landing-page.html">Part 3</a>
+						</li>
+					</ul>
+					<!-- Right -->
+					<ul class="navbar-nav nav-flex-icons">
+						<li class="nav-item">
+							<a href="https://www.facebook.com/mdbootstrap" class="nav-link" target="_blank">
+								<i class="fab fa-facebook-f"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="https://twitter.com/MDBootstrap" class="nav-link" target="_blank">
+								<i class="fab fa-twitter"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="https://github.com/mdbootstrap/bootstrap-material-design" class="nav-link" target="_blank">
+								<i class="fab fa-github mr-2"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="https://github.com/mdbootstrap/bootstrap-material-design" class="nav-link border border-light rounded"
+							   target="_blank">
+								<i class="fas fa-user mr-2"></i>Sign Up
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<!-- Navbar -->
+
+	<!--Main layout-->
+	<main class="pt-5 mx-lg-5 mt-5 wow fadeIn">
+		<h5 class="h5 text-center mb-5">Tada~</h5>
+		<div class="container-fluid mt-5">
+
+			<!--Grid row-->
+			<div class="row wow fadeIn">
+				<!--Grid column-->
+				<div class="col-lg-6 col-md-6 mb-4">
+					<!--Card-->
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header">Line chart</div>
+						<!--Card content-->
+						<div class="card-body">
+							<canvas id="lineChart"></canvas>
+						</div>
+					</div>
+					<!--/.Card-->
+				</div>
+				<!--Grid column-->
+				<!--Grid column-->
+				<div class="col-lg-6 col-md-6 mb-4">
+					<!--Card-->
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header">Radar Chart</div>
+						<!--Card content-->
+						<div class="card-body">
+							<canvas id="radarChart"></canvas>
+						</div>
+					</div>
+					<!--/.Card-->
+				</div>
+				<!--Grid column-->
+				<!--Grid column-->
+				<div class="col-lg-6 col-md-6 mb-4">
+					<!--Card-->
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header">Doughnut Chart</div>
+						<!--Card content-->
+						<div class="card-body wow">
+							<canvas id="doughnutChart"></canvas>
+						</div>
+					</div>
+					<!--/.Card-->
+				</div>
+				<!--Grid column-->
+				<!--Grid column-->
+				<div class="col-lg-6 col-md-6 mb-4">
+					<!--Card-->
+					<div class="card">
+						<!-- Card header -->
+						<div class="card-header">Horizontal Bar Chart</div>
+						<!--Card content-->
+						<div class="card-body">
+							<canvas id="horizontalBar"></canvas>
+						</div>
+					</div>
+					<!--/.Card-->
+				</div>
+				<!--Grid column-->
+			</div>
+			<!--Grid row-->
+			<!--Grid row-->
+			<div class="row wow fadeIn">
+				<!--Grid column-->
+				<div class="col-md-6 mb-4">
+					<!--Card-->
+					<div class="card">
+						<!--Card content-->
+						<div class="card-body">
+							<!-- Table  -->
+							<table class="table table-hover">
+								<!-- Table head -->
+								<thead class="blue-grey lighten-4">
+									<tr>
+										<th>#</th>
+										<th>Lorem</th>
+										<th>Ipsum</th>
+										<th>Dolor</th>
+									</tr>
+								</thead>
+								<!-- Table head -->
+								<!-- Table body -->
+								<tbody>
+									<tr>
+										<th scope="row">1</th>
+										<td>Cell 1</td>
+										<td>Cell 2</td>
+										<td>Cell 3</td>
+									</tr>
+									<tr>
+										<th scope="row">2</th>
+										<td>Cell 4</td>
+										<td>Cell 5</td>
+										<td>Cell 6</td>
+									</tr>
+									<tr>
+										<th scope="row">3</th>
+										<td>Cell 7</td>
+										<td>Cell 8</td>
+										<td>Cell 9</td>
+									</tr>
+								</tbody>
+								<!-- Table body -->
+							</table>
+							<!-- Table  -->
+						</div>
+					</div>
+					<!--/.Card-->
+				</div>
+				<!--Grid column-->
+				<!--Grid column-->
+				<div class="col-md-6 mb-4">
+					<!--Card-->
+					<div class="card">
+						<!--Card content-->
+						<div class="card-body">
+							<!-- Table  -->
+							<table class="table table-hover">
+								<!-- Table head -->
+								<thead class="blue lighten-4">
+									<tr>
+										<th>#</th>
+										<th>Lorem</th>
+										<th>Ipsum</th>
+										<th>Dolor</th>
+									</tr>
+								</thead>
+								<!-- Table head -->
+								<!-- Table body -->
+								<tbody>
+									<tr>
+										<th scope="row">1</th>
+										<td>Cell 1</td>
+										<td>Cell 2</td>
+										<td>Cell 3</td>
+									</tr>
+									<tr>
+										<th scope="row">2</th>
+										<td>Cell 4</td>
+										<td>Cell 5</td>
+										<td>Cell 6</td>
+									</tr>
+									<tr>
+										<th scope="row">3</th>
+										<td>Cell 7</td>
+										<td>Cell 8</td>
+										<td>Cell 9</td>
+									</tr>
+								</tbody>
+								<!-- Table body -->
+							</table>
+							<!-- Table  -->
+						</div>
+					</div>
+					<!--/.Card-->
+				</div>
+				<!--Grid column-->
+			</div>
+			<!--Grid row-->
+		</div>
+	</main>
+	<!--Main layout-->
+	<!--Footer-->
+	<footer class="page-footer text-center font-small mt-4 wow fadeIn">
+		<!--Call to action-->
+		<div class="pt-4">
+			<a class="btn btn-outline-white" href="https://mdbootstrap.com/docs/jquery/getting-started/download/" target="_blank"
+			   role="button">
+				Download MDB
+				<i class="fas fa-download ml-2"></i>
+			</a>
+			<a class="btn btn-outline-white" href="https://mdbootstrap.com/education/bootstrap/" target="_blank" role="button">
+				Start
+				free tutorial
+				<i class="fas fa-graduation-cap ml-2"></i>
+			</a>
+		</div>
+		<!--/.Call to action-->
+		<hr class="my-4">
+		<!-- Social icons -->
+		<div class="pb-4">
+			<a href="https://www.facebook.com/mdbootstrap" target="_blank">
+				<i class="fab fa-facebook-f mr-3"></i>
+			</a>
+			<a href="https://twitter.com/MDBootstrap" target="_blank">
+				<i class="fab fa-twitter mr-3"></i>
+			</a>
+			<a href="https://www.youtube.com/watch?v=7MUISDJ5ZZ4" target="_blank">
+				<i class="fab fa-youtube mr-3"></i>
+			</a>
+			<a href="https://plus.google.com/u/0/b/107863090883699620484" target="_blank">
+				<i class="fab fa-google-plus-g mr-3"></i>
+			</a>
+			<a href="https://dribbble.com/mdbootstrap" target="_blank">
+				<i class="fab fa-dribbble mr-3"></i>
+			</a>
+			<a href="https://pinterest.com/mdbootstrap" target="_blank">
+				<i class="fab fa-pinterest mr-3"></i>
+			</a>
+			<a href="https://github.com/mdbootstrap/bootstrap-material-design" target="_blank">
+				<i class="fab fa-github mr-3"></i>
+			</a>
+			<a href="http://codepen.io/mdbootstrap/" target="_blank">
+				<i class="fab fa-codepen mr-3"></i>
+			</a>
+		</div>
+		<!-- Social icons -->
+		<!--Copyright-->
+		<div class="footer-copyright py-3">
+			© 2019 Copyright:
+			<a href="https://mdbootstrap.com/education/bootstrap/" target="_blank"> MDBootstrap.com </a>
+		</div>
+		<!--/.Copyright-->
+	</footer>
+	<!--/.Footer-->
+	<!-- SCRIPTS -->
+	<!-- JQuery -->
+	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+	<!-- Bootstrap tooltips -->
+	<script type="text/javascript" src="js/popper.min.js"></script>
+	<!-- Bootstrap core JavaScript -->
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<!-- MDB core JavaScript -->
+	<script type="text/javascript" src="js/mdb.min.js"></script>
+	<!-- Initializations -->
+	<script type="text/javascript">
+		// Animations initialization
+		new WOW().init();
+
+	</script>
+
+	<!-- Charts -->
+	<script>
+
+		var inView = false;
+
+		function isScrolledIntoView(elem) {
+			var docViewTop = $(window).scrollTop();
+			var docViewBottom = docViewTop + $(window).height();
+
+			var elemTop = $(elem).offset().top;
+			var elemBottom = elemTop + $(elem).height();
+
+			return ((elemTop <= docViewBottom) && (elemBottom >= docViewTop));
+		}
+
+		$(window).scroll(function () {
+			if (isScrolledIntoView('#canvas')) {
+				if (inView) { return; }
+				inView = true;
+				new Chart(document.getElementById("canvas").getContext("2d")).Pie(data);
+			} else {
+				inView = false;
+			}
+		});
+
+		//line
+		var ctxL = document.getElementById("lineChart").getContext('2d');
+		var myLineChart = new Chart(ctxL, {
+			type: 'line',
+			data: {
+				labels: ["January", "February", "March", "April", "May", "June", "July"],
+				datasets: [{
+					label: "My First dataset",
+					backgroundColor: [
+						'rgba(105, 0, 132, .2)',
+					],
+					borderColor: [
+						'rgba(200, 99, 132, .7)',
+					],
+					borderWidth: 2,
+					data: [65, 59, 80, 81, 56, 55, 40]
+				},
+				{
+					label: "My Second dataset",
+					backgroundColor: [
+						'rgba(0, 137, 132, .2)',
+					],
+					borderColor: [
+						'rgba(0, 10, 130, .7)',
+					],
+					data: [28, 48, 40, 19, 86, 27, 90]
+				}
+				]
+			},
+			options: {
+				responsive: true,
+				animation: {
+					duration: 8000
+					}
+			}
+		});
+
+
+		//radar
+		var ctxR = document.getElementById("radarChart").getContext('2d');
+		var myRadarChart = new Chart(ctxR, {
+			type: 'radar',
+			data: {
+				labels: ["Eating", "Drinking", "Sleeping", "Designing", "Coding", "Cycling", "Running"],
+				datasets: [{
+					label: "My First dataset",
+					data: [65, 59, 90, 81, 56, 55, 40],
+					backgroundColor: [
+						'rgba(105, 0, 132, .2)',
+					],
+					borderColor: [
+						'rgba(200, 99, 132, .7)',
+					],
+					borderWidth: 2
+				}, {
+					label: "My Second dataset",
+					data: [28, 48, 40, 19, 96, 27, 100],
+					backgroundColor: [
+						'rgba(0, 250, 220, .2)',
+					],
+					borderColor: [
+						'rgba(0, 213, 132, .7)',
+					],
+					borderWidth: 2
+				}]
+			},
+			options: {
+				responsive: true,
+				animation: {
+					duration: 8000
+				}
+			}
+		});
+
+		//doughnut
+		var ctxD = document.getElementById("doughnutChart").getContext('2d');
+		var myLineChart = new Chart(ctxD, {
+			type: 'doughnut',
+			data: {
+				labels: ["Red", "Green", "Yellow", "Grey", "Dark Grey"],
+				datasets: [{
+					data: [300, 50, 100, 40, 120],
+					backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+					hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+				}]
+			},
+			options: {
+				responsive: true,
+				animation: {
+					duration: 8000
+					}
+			}
+
+		});
+
+
+
+		new Chart(document.getElementById("horizontalBar"), {
+			"type": "horizontalBar",
+			"data": {
+				"labels": ["Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Grey"],
+				"datasets": [{
+					"label": "My First Dataset",
+					"data": [22, 33, 55, 12, 86, 23, 14],
+					"fill": false,
+					"backgroundColor": ["rgba(255, 99, 132, 0.2)", "rgba(255, 159, 64, 0.2)",
+						"rgba(255, 205, 86, 0.2)", "rgba(75, 192, 192, 0.2)",
+						"rgba(54, 162, 235, 0.2)",
+						"rgba(153, 102, 255, 0.2)", "rgba(201, 203, 207, 0.2)"
+					],
+					"borderColor": ["rgb(255, 99, 132)", "rgb(255, 159, 64)", "rgb(255, 205, 86)",
+						"rgb(75, 192, 192)", "rgb(54, 162, 235)", "rgb(153, 102, 255)",
+						"rgb(201, 203, 207)"
+					],
+					"borderWidth": 1
+				}]
+			},
+			"options": {
+				"animation": {
+					"duration": 8000
+				},
+				"scales": {
+					"xAxes": [{
+						"ticks": {
+							"beginAtZero": true
+						}
+					}]
+				}
+			}
+		});
+
+	</script>
+
+</body>
+
+</html>
