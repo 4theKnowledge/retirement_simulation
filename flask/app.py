@@ -30,6 +30,15 @@ def index():
                                data=[json_labels,json_values])
     return render_template('index.html', name=name)
 
+@app.route('/postmethod', methods=['POST'])
+def get_post_javascript_data():
+    jsdata = request.form['javascript_data']
+    print(jsdata)
+    jsdata = json.loads(jsdata)
+    print(jsdata[0])
+    print(jsdata[1])
+    return jsdata[0]
+
 
 if __name__ == '__main__':
     app.run(debug=True)

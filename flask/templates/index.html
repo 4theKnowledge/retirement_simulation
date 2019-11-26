@@ -7,9 +7,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="">
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
     <body>
-        <script scr='/static/js/basicfncs.js'></script>
+        <h1>Taking User Input (jquery/ajax test)</h1>
+        <p>User data will be stored as a sessiondata and used for simulation inputs</p>
+        <h3>Post Data Section</h3>
+        <form id='inputForm' method='post'>
+            First Name:<br>
+            <input type="text" name="FirstName" id="FirstName" value="First">
+            <br>
+            Last Name:<br>
+            <input type="text" name="LastName" id="LastName" value="Last">
+            <br><br>
+            <input type="submit" value="Submit">
+        </form>
+        
+        
         <h1>Hello {{ name }}</h1>
         <p>{{ data }}</p>
         <button type="button" onclick="showDateTime('demo')">Click me!</button>
@@ -51,6 +65,20 @@
         localStorage.getItem(key);
     };
 
+    // SessionStorage
+    // Saved in JSON string format
+    function setItemSS(key, value) {
+        sessionStorage.setItem(key, value);
+    };
+
+    function removeItemSS(key) {
+        sessionStorage.removeItem(key);
+    };
+
+    function getItemSS(key) {
+        sessionStorage.getItem(key);
+    };
+
     // Logging Functionality
     function consoleLogger(msg) {
         console.log(msg);
@@ -66,7 +94,35 @@
         document.getElementById(id).innerHTML = data;
     };
 
+    // AJAX for User Input
+    $('#inputForm').submit(function(event) {
+        
+        /* Stop form from submitting normally */
+        event.preventDefault();
+
+        /* get form values */
+        var firstName = $("#FirstName").val();
+        var lastName = $('#LastName').val();
+        alert(firstName);
+        alert(lastName);
+
+        // var form = document.getElementById('inputForm'),
+        //     firstName = form.find('input[name="FirstName]"').val(),
+        //     lastName = form.find('input[name="LastName]"').val();
+        
+        /* send the data using post */
+        var posting = $.post('/postmethod', {
+            javascript_data: JSON.stringify([firstName, lastName]) /* convert array to string to send across server */ 
+        });
+
+        posting.done(function(data) {
+            alert('success');
+        });
+    });
+
     </script>
+
+
     <script>
     var ctx = document.getElementById('myChart').getContext('2d');
     var labels = '{{ data[0] }}';
@@ -90,4 +146,5 @@
         options: {}
     });
     </script>
+
 </html>
