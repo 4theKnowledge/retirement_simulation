@@ -6,6 +6,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     </head>
     <body>
         <script scr='/static/js/basicfncs.js'></script>
@@ -15,19 +16,25 @@
         <p id="demo"></p>
         <button type="button" onclick="consoleLogger('hello console logger')">Click me!</button>
         <br><br>
-        <button type="button" onclick="setItemLS(tempKey, jsonData)">LS Set Item</button>
+        <button type="button" onclick="setItemLS('labels', labels)">Add Label Data to LS</button>
+        <button type="button" onclick="setItemLS('values', values)">Add Value Data to LS</button>
         <br><br>
-        <button type="button" onclick="removeItemLS(tempKey)">LS Remove Item</button>
+        <button type="button" onclick="removeItemLS('labels')">Remove Label Data to LS</button>
+        <button type="button" onclick="removeItemLS('values')">Remove Value Data to LS</button>
         <br><br>
         <h3>Accessing Local Storage Elements</h3>
-        <button type="button" onclick="showLSData('localStorageData', tempKey)">Retrieve LS Data</button>    <!-- showLSData('localStorageData', getItemLS(tempKey)) -->
+        <button type="button" onclick="showLSData('localStorageData', 'values')">Retrieve LS Values</button>    <!-- showLSData('localStorageData', getItemLS(tempKey)) -->
         <p id="localStorageData"></p>
+        <br><br>
+        <canvas id="myChart"></canvas>
+
     </body>
 
     <script>
 
     var tempKey = '{{ name }}';
-    var jsonData = '{{ data }}';
+    var labels = '{{ data[0] }}';
+    var values = '{{ data[1] }}';
 
     // LocalStorage
     // Saved in JSON string format
@@ -59,5 +66,28 @@
         document.getElementById(id).innerHTML = data;
     };
 
+    </script>
+    <script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var labels = '{{ data[0] }}';
+    // var values = '{{ data[1] }}';
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August','September', 'October'],
+            datasets: [{
+                label: 'My First dataset',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: JSON.parse(localStorage.getItem('values'))
+            }]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
     </script>
 </html>

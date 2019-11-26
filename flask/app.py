@@ -1,11 +1,18 @@
+"""
+"""
+
 import pandas as pd
 import json
+
 
 from flask import Flask, render_template, url_for, jsonify, request
 app = Flask(__name__)
 
+
 def basic_function():
-    return [1,2,3,4,5,6,7,8,9,10]
+    labels = [1,1,2,2,3,3,4,4,5,5]
+    values = [2,3,11,5,4,33,2,2,2,9]
+    return labels, values
 
 
 @app.route("/", methods=['GET'])
@@ -15,11 +22,14 @@ def index():
     print(f'METHOD: {request.method}')
 
     if request.method=='GET':
-        array = basic_function()
-        json_array = json.dumps(array)
-        return render_template('index.html', name=name, data=json_array)
-    
+        labels, values = basic_function()
+        json_labels = json.dumps(labels)
+        json_values = json.dumps(values)
+        return render_template('index.html',
+                               name=name,
+                               data=[json_labels,json_values])
     return render_template('index.html', name=name)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
