@@ -106,8 +106,15 @@
             var labelData = JSON.parse(localStorage.getItem(labelName))
             var valueData = JSON.parse(localStorage.getItem(valueName))
 
+            var plotNames = {'plot1': 'Super Balance',
+                            'plot2': 'Savings',
+                            'plot3': 'Loan Principal',
+                            'plot4': 'Super Drawdown',
+                            'plot5': 'Disposable Income'};
+
             var ctx = document.getElementById(chartId).getContext('2d');
-            var fillType = ((chartId = 'plot5') ? 'origin' :'start');
+            var fillType = ((chartId == 'plot5') ? 'origin' : 'start');
+
             var chart = new Chart(ctx, {
                 // The type of chart we want to create
                 type: 'line',
@@ -116,7 +123,7 @@
                 data: {
                     labels: labelData,
                     datasets: [{
-                        label: chartId,
+                        label: plotNames[chartId],
                         backgroundColor: 'rgb(255, 99, 132, 0.3)',
                         borderColor: 'rgb(255, 99, 132)',
                         data: valueData,
@@ -125,7 +132,22 @@
                         }]
                     },
                 // Configuration options go here
-                options: {}
+                options: {
+                    scales: {
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: '$ (Not Adjusted)'
+                            }
+                        }],
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time (Months)'
+                            }
+                        }]
+                    }
+                }
             });
         };
     </script>
@@ -153,7 +175,11 @@
         var x = document.getElementById(chartId);
         var y = document.getElementById('plotTypeText');
 
-        var plotNames = {'plot1': 'Super Balance','plot2': 'Savings', 'plot3': 'Loan Principal', 'plot4': 'Super Drawdown', 'plot5': 'Disposable Income'}
+        var plotNames = {'plot1': 'Super Balance',
+                        'plot2': 'Savings',
+                        'plot3': 'Loan Principal',
+                        'plot4': 'Super Drawdown',
+                        'plot5': 'Disposable Income'};
 
         if (x.style.display == "none") {
             x.style.display = "block";
@@ -161,10 +187,6 @@
         } else {
             x.style.display = "none";
         }
-
-
-
-
     }
 
     </script>

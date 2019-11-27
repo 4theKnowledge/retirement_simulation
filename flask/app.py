@@ -68,28 +68,6 @@ def model_simulation(current_age = 20,
     return plot_data
     
     
-def intermediate_function():
-    """
-    """
-    current_age = int(current_age)
-    retirement_age = int(retirement_age)
-    
-    x = list(range(current_age, retirement_age, 1))
-    y = list(range(10, 10+len(x), 1))
-    z = list(range(2, 2+len(x), 1))
-    
-    # time.sleep(15)
-    
-    x = json.dumps(x)
-    y = json.dumps(y)
-    z = json.dumps(z)
-    
-    plot_data = {"plot1": {"labels": x, "values": y},
-                    "plot2": {"labels": x, "values": z}}
-    
-    return plot_data
-    
-
 @app.route('/home', methods=['POST', 'GET'])
 def home():
     if request.method == 'POST':
