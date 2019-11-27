@@ -1,0 +1,89 @@
+
+
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Sim Tool</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+</head> 
+<body>
+    <div class="jumbotron text-center" style="margin-bottom:0">
+            <h1>Lets Simulate.</h1>
+            <p>Personal Finance Forecasting Simulator</p> 
+        </div> 
+        
+        <!-- Navbar -->
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>                        
+                    </button>
+                    <a class="navbar-brand" href="#">Sim Tool</a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Assumptions & Limitations</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+        </div>
+    </nav>
+    <!-- Navbar -->
+    
+    <div class="container">
+        <div class="row">
+            <!-- <div class="col-sm-4">
+                <h3>Basic Information</h3>
+                <form method='POST'>
+                    Current Age: <input type="text" name="currentAge" placeholder="Enter current age">
+                    <br>
+                    Retirement Age: <input type="text" name="retireAge" placeholder="Enter retirement age">
+                    <input type="submit" value="Start Simulation">
+                </form>
+            </div> -->
+
+        </div>
+        <div class="row">
+            <form method='POST'> 
+                <div class="form-group">
+                    <label for="currentAge">Current Age</label>
+                    <input type="text" class="form-control" name="currentAge" placeholder="Enter current age">
+                    <small id="currentAgeHelp" class="form-text text-muted">This is the beginning date of the simulation.</small>
+                </div>
+                <div class="form-group">
+                    <label for="retireAge">Desired Retirement Age</label>
+                    <input type="text" class="form-control" name="retireAge" placeholder="Enter desired retirement age">
+                </div>
+                <!-- <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                </div> -->
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+
+
+        </div>
+
+            
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Plot Heading</h2>
+                <h5>Plot description</h5>
+                <p>Some descriptive text..</p>
+                <div class="plotClass"></div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    </body>

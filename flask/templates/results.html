@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <title>Sim Tool</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    </head> 
+    <body>
+        <div class="jumbotron text-center" style="margin-bottom:0">
+            <h1>Lets Simulate.</h1>
+            <p>Personal Finance Forecasting Simulator</p> 
+        </div> 
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>                        
+            </button>
+            <a class="navbar-brand" href="#">Sim Tool</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Assumptions & Limitations</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar -->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3>Basic Information</h3>
+                <h5>Current Age: {{ data[0] }}</h5>
+                <h5>Retirement Age: {{ data[1] }}</h5>
+            </div>
+            <div class="col-sm-4">
+                <h3>Simulation Information</h3>
+                <h5>Iterations: </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Plot Types</h3>
+                <p>Select the plot of interest below</p>
+                <div class="btn-group" role="group">
+                    <button type="button" onclick="hideElement('plot1')" class="btn btn-light btn-sm">Super Balance</button>
+                    <button type="button" onclick="hideElement('plot2')" class="btn btn-light btn-sm">Savings</button>
+                    <button type="button" onclick="hideElement('plot3')" class="btn btn-light btn-sm ">Loan Principal</button>
+                    <button type="button" onclick="hideElement('plot4')" class="btn btn-light btn-sm ">Super Drawdown</button>
+                    <button type="button" onclick="hideElement('plot5')" class="btn btn-light btn-sm ">Disposable Income</button>
+                </div>
+            </div>
+        </div>
+            
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Plot Heading</h2>
+                <h5>Plot description</h5>
+                <p>Some descriptive text..</p>
+                <div class="plotClass"></div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    </body>
+    
+    <script>
+    // Stores results into localStorage
+    
+    var plot_data = JSON.parse('{{ plot_data|tojson }}');
+
+    // Adding data to LocalStorage
+    var noPlots = Object.keys(plot_data).length
+
+    for (var i = 1; i < noPlots+1; i++){
+        var plotName = 'plot' + i
+        var plotLabels = 'plot' + i + '_labels'
+        var plotValues = 'plot' + i + '_values'
+        localStorage.setItem(plotLabels, plot_data[plotName]['labels'])
+        localStorage.setItem(plotValues, plot_data[plotName]['values'])
+    }
+
+    </script>
+
+    <script>
+        function generatePlots(chartId) {
+            var labelName = chartId + '_labels'
+            var valueName = chartId + '_values'
+            var labelData = JSON.parse(localStorage.getItem(labelName))
+            var valueData = JSON.parse(localStorage.getItem(valueName))
+
+            var ctx = document.getElementById(chartId).getContext('2d');
+            var fillType = ((chartId = 'plot5') ? 'origin' :'start');
+            var chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: {
+                    labels: labelData,
+                    datasets: [{
+                        label: chartId,
+                        backgroundColor: 'rgb(255, 99, 132, 0.3)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        data: valueData,
+                        pointRadius: 0,
+                        fill: fillType,
+                        }]
+                    },
+                // Configuration options go here
+                options: {}
+            });
+        };
+    </script>
+
+    <script>
+        // Generating chars via DOM manipulation
+        var plot_data = JSON.parse('{{ plot_data|tojson }}');
+        var noPlots = Object.keys(plot_data).length
+
+        for (var i = 1; i < noPlots+1; i++) {
+            var oneCanvas = document.createElement('canvas');
+            oneCanvas.id = 'plot' + i;
+            oneCanvas.style = "width: 75%; height: 50%; display: none"
+            document.getElementsByClassName("plotClass")[0].appendChild(oneCanvas);
+            
+            generatePlots(oneCanvas.id);
+
+        };   
+    
+    </script>
+
+    <script>
+    // Function for hiding charts on button click
+    function hideElement(chartId) {
+        var x = document.getElementById(chartId);
+        if (x.style.display == "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+
+    }
+
+    </script>
+
+
+
+</html>

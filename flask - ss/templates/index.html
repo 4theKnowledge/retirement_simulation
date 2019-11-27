@@ -10,25 +10,33 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
     <body>
-        <h1>Taking User Input (jquery/ajax test)</h1>
+        <h1>Let's Simulate.</h1>
+        <h3>Simulation Input Data</h3>
         <p>User data will be stored as a sessiondata and used for simulation inputs</p>
-        <h3>Post Data Section</h3>
+
         <form id='inputForm' method='post'>
-            First Name:<br>
-            <input type="text" name="FirstName" id="FirstName" value="First">
+            Current Age:<br>
+            <input type="text" name="currentAge" id="currentAge" placeholder="Enter Current Age">
             <br>
-            Last Name:<br>
-            <input type="text" name="LastName" id="LastName" value="Last">
+            Retirement Age:<br>
+            <input type="text" name="retireAge" id="retireAge" placeholder="Enter Retirement Age">
+            <br>
+            Annual Income:<br>
+            <input type="text" name="incomeAmt" id="incomeAmt" placeholder="Enter Income">
             <br><br>
             <input type="submit" value="Submit">
+            <br>
+            <h1 id='newData'></h1>
         </form>
         
-        
-        <h1>Hello {{ name }}</h1>
-        <p>{{ data }}</p>
+        <!-- ...Development... -->
+        Labels:<br>
+        <p id='labels'></p>
+        Values:<br>
+        <p id='values'></p>
         <button type="button" onclick="showDateTime('demo')">Click me!</button>
         <p id="demo"></p>
-        <button type="button" onclick="consoleLogger('hello console logger')">Click me!</button>
+        <button type="button" onclick="consoleLogger('hello console logger')">Click me for console log!</button>
         <br><br>
         <button type="button" onclick="setItemLS('labels', labels)">Add Label Data to LS</button>
         <button type="button" onclick="setItemLS('values', values)">Add Value Data to LS</button>
@@ -44,6 +52,54 @@
 
     </body>
 
+    <!-- AJAX for User Input -->
+    <script>
+        $('#inputForm').submit(function(event) {
+            /* Stop form from submitting normally */
+            event.preventDefault();
+    
+            /* get form values */
+            var currentAge = $("#currentAge").val();
+            var retireAge = $('#retireAge').val();
+            var incomeAmt = $('#incomeAmt').val();
+    
+            /* send the data using post */
+            var posting = $.post('/postmethod', {
+                javascript_data: JSON.stringify({'current_age': currentAge, 'retirement_age': retireAge, 'income_amount': incomeAmt}) /* convert array to string to send across server */ 
+            });
+    
+            posting.done(function(data) {
+                alert('success');
+            });
+        });
+        
+    </script>
+
+    <script>
+    
+    try {
+        var labels = '{{ data[0] }}';
+    }
+    catch(err) {
+        var labels = 'Labels not loaded'
+    }
+    try {
+        var values = '{{ data[1] }}';
+    }
+    catch(err) {
+        var values = 'Labels not loaded'
+    }
+    var newData = '{{ new_data }}'
+
+    document.getElementById('labels').innerHTML = labels;
+    document.getElementById('values').innerHTML = values;
+    document.getElementById('newData').innerHTML = newData;
+    
+    </script>
+
+
+
+    <!-- Other Functions -->
     <script>
 
     var tempKey = '{{ name }}';
@@ -93,35 +149,8 @@
         var data = localStorage.getItem(key);
         document.getElementById(id).innerHTML = data;
     };
-
-    // AJAX for User Input
-    $('#inputForm').submit(function(event) {
-        
-        /* Stop form from submitting normally */
-        event.preventDefault();
-
-        /* get form values */
-        var firstName = $("#FirstName").val();
-        var lastName = $('#LastName').val();
-        alert(firstName);
-        alert(lastName);
-
-        // var form = document.getElementById('inputForm'),
-        //     firstName = form.find('input[name="FirstName]"').val(),
-        //     lastName = form.find('input[name="LastName]"').val();
-        
-        /* send the data using post */
-        var posting = $.post('/postmethod', {
-            javascript_data: JSON.stringify([firstName, lastName]) /* convert array to string to send across server */ 
-        });
-
-        posting.done(function(data) {
-            alert('success');
-        });
-    });
-
     </script>
-
+    
 
     <script>
     var ctx = document.getElementById('myChart').getContext('2d');
