@@ -41,16 +41,6 @@
     
     <div class="container">
         <div class="row">
-            <!-- <div class="col-sm-4">
-                <h3>Basic Information</h3>
-                <form method='POST'>
-                    Current Age: <input type="text" name="currentAge" placeholder="Enter current age">
-                    <br>
-                    Retirement Age: <input type="text" name="retireAge" placeholder="Enter retirement age">
-                    <input type="submit" value="Start Simulation">
-                </form>
-            </div> -->
-
         </div>
         <div class="row">
             <form method='POST'> 
@@ -62,27 +52,34 @@
                 <div class="form-group">
                     <label for="retireAge">Desired Retirement Age</label>
                     <input type="text" class="form-control" name="retireAge" placeholder="Enter desired retirement age">
+                    <small id="retireAgeHelp" class="form-text text-muted">This is the age you expect to retire.</small>
                 </div>
+                <div class="form-group">
+                    <label for="currentIncome">Current Income</label>
+                    <input type="text" class="form-control" name="currentIncome" placeholder="Enter current income">
+                    <small id="currentIncomeHelp" class="form-text text-muted">Your current gross (before tax) annual income.</small>
+                </div>
+                <div class="form-group">
+                    <label for="retireIncome">Desired Retirement Income</label>
+                    <input type="text" class="form-control" name="retireIncome" placeholder="Enter desired retirement income">
+                    <small id="retireIncomeHelp" class="form-text text-muted">This is how much you expect to require per year upon retirement.</small>
+                </div>
+                <div class="form-group">
+                    <label for="retireEndAge">Likely Retirement End Age</label>
+                    <input type="text" class="form-control" name="retireEndAge" placeholder="Enter likely retirement end age">
+                    <small id="retireEndAgeHelp" class="form-text text-muted">Expected end of life (Aus ave - Male: 80 Female: 85).</small>
+                </div>
+
+
                 <!-- <div class="form-group form-check">
                     <input type="checkbox" class="form-check-input" id="exampleCheck1">
                     <label class="form-check-label" for="exampleCheck1">Check me out</label>
                 </div> -->
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-secondary">Simulate</button>
             </form>
 
 
 
-        </div>
-
-            
-        <div class="row">
-            <div class="col-sm-12">
-                <h2>Plot Heading</h2>
-                <h5>Plot description</h5>
-                <p>Some descriptive text..</p>
-                <div class="plotClass"></div>
-                <br>
-            </div>
         </div>
     </div>
 

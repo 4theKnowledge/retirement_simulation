@@ -30,16 +30,19 @@ def load_sim_data():
                 "plot2": {"labels": index, "values": savings},
                 "plot3": {"labels": index, "values": loan_principal},
                 "plot4": {"labels": index, "values": super_drawdown},
-                "plot5": {"labels": index, "values": disposable_income},}
+                "plot5": {"labels": index, "values": disposable_income}
+                }
     
     return plot_data
     
     
-def model_simulation(income = 18000,
-                          retire_income = 20000,
-                          current_age = 20,
-                          retirement_age = 50,
-                          retirement_end_age = 80):
+def model_simulation(current_age = 20,
+                     retire_age = 50,
+                     income = 52000,
+                     retire_income = 25000,
+                     retirement_end_age = 82):
+    
+    start_date = start_date = datetime.date(2020,1,1)   
     
     df = pd.DataFrame(phase_model(start_date,
                                   current_age,
@@ -48,9 +51,23 @@ def model_simulation(income = 18000,
                                   income,
                                   retire_income))
     
+    index = json.dumps(list(df.index))
+    super_bal = json.dumps(list(df['Super_Balance_Value']))
+    savings = json.dumps(list(df['Savings_Val']))
+    loan_principal = json.dumps(list(df['Loan_Begin_Balance']))
+    super_drawdown = json.dumps(list(df['Super_Drawdown']))
+    disposable_income = json.dumps(list(df['Disposable_Income']))
+       
+    plot_data = {"plot1": {"labels": index, "values": super_bal},
+                "plot2": {"labels": index, "values": savings},
+                "plot3": {"labels": index, "values": loan_principal},
+                "plot4": {"labels": index, "values": super_drawdown},
+                "plot5": {"labels": index, "values": disposable_income}
+                }
+    
+    return plot_data
     
     
-
 def intermediate_function():
     """
     """
@@ -76,15 +93,20 @@ def intermediate_function():
 @app.route('/home', methods=['POST', 'GET'])
 def home():
     if request.method == 'POST':
-        currentAge = request.form.get('currentAge')
-        retireAge = request.form.get('retireAge')
+        currentAge = int(request.form.get('currentAge'))
+        retireAge = int(request.form.get('retireAge'))
+        currentIncome = int(request.form.get('currentIncome'))
+        retireIncome = int(request.form.get('retireIncome'))
+        retireEndAge = int(request.form.get('retireEndAge'))
         
-        # plot_data = intermediate_function(currentAge, retireAge)
-        plot_data = load_sim_data()
+        plot_data = model_simulation(currentAge,
+                                     retireAge,
+                                     currentIncome,
+                                     retireIncome,
+                                     retireEndAge)
         
         
         data = [currentAge, retireAge]
-        # return f'<h1> Current Age: {currentAge} Retire Age: {retireAge} Income Amount: {incomeAmt}'
         return render_template('results.html', data=data, plot_data=plot_data)
 
     return render_template('home.html')

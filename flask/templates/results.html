@@ -40,18 +40,23 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-4">
-                <h3>Basic Information</h3>
-                <h5>Current Age: {{ data[0] }}</h5>
-                <h5>Retirement Age: {{ data[1] }}</h5>
+                <h2>Information</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <h3>General</h3>
+                <p>Current Age: {{ data[0] }}</p>
+                <p>Retirement Age: {{ data[1] }}</p>
             </div>
             <div class="col-sm-4">
-                <h3>Simulation Information</h3>
-                <h5>Iterations: </h5>
+                <h3>Simulation</h3>
+                <p>Iterations: </p>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
-                <h3>Plot Types</h3>
+                <h2>Plot Types</h2>
                 <p>Select the plot of interest below</p>
                 <div class="btn-group" role="group">
                     <button type="button" onclick="hideElement('plot1')" class="btn btn-light btn-sm">Super Balance</button>
@@ -65,9 +70,9 @@
             
         <div class="row">
             <div class="col-sm-12">
-                <h2>Plot Heading</h2>
-                <h5>Plot description</h5>
-                <p>Some descriptive text..</p>
+                <h2>Simulation Results</h2>
+                <h4 id="plotTypeText"></h4> 
+                <p>Shows the cumulative value of super annuation.</p>
                 <div class="plotClass"></div>
                 <br>
             </div>
@@ -146,11 +151,19 @@
     // Function for hiding charts on button click
     function hideElement(chartId) {
         var x = document.getElementById(chartId);
+        var y = document.getElementById('plotTypeText');
+
+        var plotNames = {'plot1': 'Super Balance','plot2': 'Savings', 'plot3': 'Loan Principal', 'plot4': 'Super Drawdown', 'plot5': 'Disposable Income'}
+
         if (x.style.display == "none") {
             x.style.display = "block";
+            y.innerHTML = plotNames[chartId]
         } else {
             x.style.display = "none";
         }
+
+
+
 
     }
 
