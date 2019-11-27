@@ -20,6 +20,10 @@ import matplotlib.pyplot as plt
 # Phase 1 development
 
 def tax_model(annual_income):
+    """
+    Calculates tax on gross annual income.
+    Note: Tax rates are current as of 2019-2020 and sourced from the ATO.
+    """
     tax_table_income = {1: [0, 18200],
                 2: [18201, 37000],
                 3: [37001, 90000],
@@ -33,12 +37,8 @@ def tax_model(annual_income):
                     5: [0.45, 54097]}
 
     for key, value in tax_table_income.items():
-        # print(key, value)
         if value[0] <= annual_income <= value[1]:
-            # print(key)
-            # print(f'Tax rate to pay on the dollar over ${value[0]} is ${tax_table_paymt[key][0]} with lump sum ${tax_table_paymt[key][1]}')
             tax_to_pay = tax_table_paymt[key][1] + tax_table_paymt[key][0] * (annual_income-tax_table_income[key][0])
-            # print(f'Required to pay income tax of: ${tax_to_pay:0.0f}')
            
     monthly_income_tax = tax_to_pay / 12
     
@@ -50,7 +50,8 @@ def super_model(model_phase, annual_income, retire_income, monthly_super_contrib
     Assumes super annuation is run via an institution and is not self managed
     """
     
-    # TODO CONVERT ALL INFORMATION TO TODAYS DOLLARS AS PER THE ASSUMPTIONS ON: https://www.moneysmart.gov.au/tools-and-resources/calculators-and-apps/superannuation-calculator
+    # TODO CONVERT ALL INFORMATION TO TODAYS DOLLARS AS PER THE ASSUMPTIONS ON: 
+    # https://www.moneysmart.gov.au/tools-and-resources/calculators-and-apps/superannuation-calculator
     #           Also, shift interest calc to be on the last months value not the same months value as this is more realistic.
     
     
@@ -77,7 +78,7 @@ def super_model(model_phase, annual_income, retire_income, monthly_super_contrib
             cumulative_super_val += monthly_super_contrib + initial_super_bal
             # print('in bal = 0 loop, cum_val: ', cumulative_super_val)
         else:
-            cumulative_super_val = (cumulative_super_val + monthly_super_contrib - super_fees) * (1 + (0.06 / 12)) # 8% return p.a.
+            cumulative_super_val = (cumulative_super_val + monthly_super_contrib - super_fees) * (1 + (0.06 / 12)) # 6% return p.a.
             # cumulative_super_val + monthly_super_contrib
             
         # Cumulative Contributions to super
@@ -90,7 +91,6 @@ def super_model(model_phase, annual_income, retire_income, monthly_super_contrib
         
             
         return monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val
-
 
     # Drawdown for Phase 2
     if model_phase == 2:
