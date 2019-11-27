@@ -58,8 +58,8 @@
             <div class="col-sm-12">
                 <h2>Plot Types</h2>
                 <p>Select the plot of interest below</p>
-                <div class="btn-group" role="group">
-                    <button type="button" onclick="hideElement('plot1')" class="btn btn-light btn-sm">Super Balance</button>
+                <div id="selector" class="btn-group" role="group">
+                    <button id="superBalBtn" type="button" onclick="hideElement('plot1')" class="btn btn-light btn-sm">Super Balance</button>
                     <button type="button" onclick="hideElement('plot2')" class="btn btn-light btn-sm">Savings</button>
                     <button type="button" onclick="hideElement('plot3')" class="btn btn-light btn-sm ">Loan Principal</button>
                     <button type="button" onclick="hideElement('plot4')" class="btn btn-light btn-sm ">Super Drawdown</button>
@@ -135,6 +135,12 @@
                 options: {
                     scales: {
                         yAxes: [{
+                            ticks: {
+                                // Include a dollar sign in the ticks
+                                callback: function(value, index, values) {
+                                    return '$' + value;
+                                }
+                            },
                             scaleLabel: {
                                 display: true,
                                 labelString: '$ (Not Adjusted)'
@@ -184,11 +190,19 @@
         if (x.style.display == "none") {
             x.style.display = "block";
             y.innerHTML = plotNames[chartId]
+            document.getElementById(chartId).scrollIntoView();
         } else {
             x.style.display = "none";
         }
     }
 
+    </script>
+
+    <script>
+    $('#selector button').click(function() {
+        $(this).addClass('active').siblings().removeClass('active');
+    });
+    
     </script>
 
 
