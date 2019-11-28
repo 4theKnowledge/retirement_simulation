@@ -89,13 +89,13 @@ def home():
                         }
         
         # saving init
-        saving_config = {'proportion': 0.25,
-                        'interest_rate': 0.03}
+        saving_config = {'proportion': float(request.form.get('savingProportion')) / 100,
+                        'interest_rate': float(request.form.get('savingInterestRate')) / 100}
         # loan init
-        loan_config = {'principal': 300000,
-                        'interest_rate': 0.04,
-                        'annual_payments': 12,
-                        'years': 30}
+        loan_config = {'principal': float(request.form.get('loanPrincipal')),
+                        'interest_rate': float(request.form.get('loanInterestRate')) / 100,
+                        'annual_payments': float(request.form.get('loanAnnualPayments')),
+                        'years': float(request.form.get('loanDuration'))}
         
         # expenses init
 

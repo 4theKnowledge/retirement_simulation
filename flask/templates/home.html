@@ -11,6 +11,25 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.11/js/mdb.min.js"></script>
+    <style>
+        body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        }
+
+        .h5Card {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: x-large;
+            color: black;
+        }
+
+        .simToolText {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: large;
+            color: grey;
+        }
+
+    </style>
 </head> 
 <body>
     <div class="jumbotron text-center" style="margin-bottom:0">
@@ -19,9 +38,9 @@
         </div> 
         
         <!-- Navbar -->
-    <nav class="navbar navbar-inverse">
+    <nav class="navbar navbar-inverse navbar-static-top">
         <div class="container-fluid">
-            <div class="navbar-header">
+            <!-- <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -35,91 +54,222 @@
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
                 </ul>
-            </div>
+            </div> -->
         </div>
     </nav>
     <!-- Navbar -->
-    
+
+    <!--Accordion wrapper-->
     <div class="container">
-        <div class="row">
+        <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
+            <!-- Accordion card -->
+            <div class="card">
+            <!-- Card header -->
+            <div class="card-header" role="tab" id="headingOne1">
+                <a data-toggle="collapse" data-parent="#accordionEx" href="#collapseOne1" aria-expanded="true" aria-controls="collapseOne1">
+                    <h5 class="h5Card">Details</h5>
+                </a>
+            </div>
+            <!-- Card body -->
+            <div id="collapseOne1" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionEx">
+                <div class="card-body">
+                    Details pertaining to the use of the web app simulation tool.
+                </div>
+            </div>
+            </div>
+        <!-- Accordion card -->
+      
+        <!-- Accordion card -->
+        <div class="card">
+      
+          <!-- Card header -->
+          <div class="card-header" role="tab" id="headingTwo2">
+            <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2">
+              <h5 class="h5Card">Assumptions and Limitations</h5>
+            </a>
+          </div>
+      
+          <!-- Card body -->
+          <div id="collapseTwo2" class="collapse" role="tabpanel" aria-labelledby="headingTwo2" data-parent="#accordionEx">
+            <div class="card-body">
+              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+            </div>
+          </div>
         </div>
-        <div class="row">
-            <form method='POST'> 
-                <h2>General Information</h2>
-                <br>
-                <div class="form-group">
-                    <label for="currentAge">Current Age</label>
-                    <input type="text" class="form-control" name="currentAge" placeholder="Enter current age" value="26">
-                    <small id="currentAgeHelp" class="form-text text-muted">This is the beginning date of the simulation.</small>
-                </div>
-                <div class="form-group">
-                    <label for="retireAge">Retirement Age</label>
-                    <input type="text" class="form-control" name="retireAge" placeholder="Enter desired retirement age" value= "65">
-                    <small id="retireAgeHelp" class="form-text text-muted">This is the age you expect to retire.</small>
-                    </div>
-                <div class="form-group">
-                    <label for="currentIncome">Current Income ($)</label>
-                    <input type="text" class="form-control" name="currentIncome" placeholder="Enter current income" value="52000">
-                    <small id="currentIncomeHelp" class="form-text text-muted">Your current gross (before tax) annual income.</small>
-                </div>
-                <div class="form-group">
-                    <label for="retireIncome">Retirement Income ($)</label>
-                    <input type="text" class="form-control" name="retireIncome" placeholder="Enter desired retirement income" value="25000">
-                    <small id="retireIncomeHelp" class="form-text text-muted">This is how much you expect to require per year upon retirement.</small>
-                </div>
-                <div class="form-group">
-                    <label for="retireEndAge">Retirement End Age</label>
-                    <input type="text" class="form-control" name="retireEndAge" placeholder="Enter likely retirement end age" value="80">
-                    <small id="retireEndAgeHelp" class="form-text text-muted">Expected end of life (Aus ave - Male: 80 Female: 85).</small>
-                </div>
-                <!-- SUPERANNUATION FORM ELEMENTS -->
-                <!-- Copy other website functionality with pre-defined selections that populate the fields...-->
-                <h2>Superannuation Details</h2>
-                <br>
-                <div class="form-group">
-                    <label for="superContribRate">Employer Contributon (%)</label>
-                    <input type="text" class="form-control" name="superContribRate" placeholder="" value="9.5">
-                    <small id="superContribRate" class="form-text text-muted"></small>
-                </div>
-                <div class="form-group">
-                    <label for="superAdminFees">Admin Fees ($)</label>
-                    <input type="text" class="form-control" name="superAdminFees" placeholder="" value="100">
-                    <small id="superAdminFees" class="form-text text-muted"></small>
-                </div>
-                <div class="form-group">
-                    <label for="sueprInvestFee">Investment Fee (%)</label>
-                    <input type="text" class="form-control" name="sueprInvestFee" placeholder="" value="1">
-                    <small id="sueprInvestFee" class="form-text text-muted"></small>
-                </div>
-                <div class="form-group">
-                    <label for="superContribFee">Contribute Fee (%)</label>
-                    <input type="text" class="form-control" name="superContribFee" placeholder="" value="1">
-                    <small id="superContribFee" class="form-text text-muted"></small>
-                </div>
-                <div class="form-group">
-                    <label for="superInsurePrem">Insurance Premium ($)</label>
-                    <input type="text" class="form-control" name="superInsurePrem" placeholder="" value="0">
-                    <small id="superInsurePrem" class="form-text text-muted">Insurance premium cost per year.</small>
-                    </div>
-                <div class="form-group">
-                    <label for="superIndirectFee">Indirect Fees (%)</label>
-                    <input type="text" class="form-control" name="superIndirectFee" placeholder="" value="0.2">
-                    <small id="superIndirectFee" class="form-text text-muted"></small>
-                </div>
-                <div class="form-group">
-                    <label for="superReturnRate">Interest Rate (%)</label>
-                    <input type="text" class="form-control" name="superReturnRate" placeholder="" value="8">
-                    <small id="superReturnRate" class="form-text text-muted">Annual compound interest rate.</small>
-                </div>
-
-                <!-- <div class="form-group form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                </div> -->
-                <button type="submit" class="btn btn-secondary">Simulate</button>
-            </form>
+        <!-- Accordion card -->
+      
+        <!-- Accordion card -->
+        <div class="card">
+      
+          <!-- Card header -->
+          <div class="card-header" role="tab" id="headingThree3">
+            <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree3" aria-expanded="false" aria-controls="collapseThree3">
+              <h5 class="h5Card">Simulation Tool</h5>
+            </a>
+          </div>
+      
+          <!-- Card body -->
+          <div id="collapseThree3" class="collapse" role="tabpanel" aria-labelledby="headingThree3" data-parent="#accordionEx">
+            <div class="card-body">
+                    <form method="POST">
+                            <h3 class="simToolText">General Information</h3>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="currentAge">Current Age</label>
+                                        <input type="text" class="form-control" name="currentAge" placeholder="Enter current age" value="26">
+                                        <small id="currentAgeHelp" class="form-text text-muted">This is the beginning date of the simulation.</small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="retireAge">Retirement Age</label>
+                                        <input type="text" class="form-control" name="retireAge" placeholder="Enter desired retirement age" value= "65">
+                                        <small id="retireAgeHelp" class="form-text text-muted">This is the age you expect to retire.</small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="currentIncome">Current Income ($)</label>
+                                        <input type="text" class="form-control" name="currentIncome" placeholder="Enter current income" value="52000">
+                                        <small id="currentIncomeHelp" class="form-text text-muted">Your current gross (before tax) annual income.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="retireIncome">Retirement Income ($)</label>
+                                        <input type="text" class="form-control" name="retireIncome" placeholder="Enter desired retirement income" value="25000">
+                                        <small id="retireIncomeHelp" class="form-text text-muted">This is how much you expect to require per year upon retirement.</small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="retireEndAge">Retirement End Age</label>
+                                        <input type="text" class="form-control" name="retireEndAge" placeholder="Enter likely retirement end age" value="80">
+                                        <small id="retireEndAgeHelp" class="form-text text-muted">Expected end of life (Aus ave - Male: 80 Female: 85).</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="simToolText">Superannuation Details</h3>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="superContribRate">Employer Contributon (%)</label>
+                                        <input type="text" class="form-control" name="superContribRate" placeholder="" value="9.5">
+                                        <small id="superContribRate" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="superAdminFees">Admin Fees ($)</label>
+                                        <input type="text" class="form-control" name="superAdminFees" placeholder="" value="100">
+                                        <small id="superAdminFees" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="sueprInvestFee">Investment Fee (%)</label>
+                                        <input type="text" class="form-control" name="sueprInvestFee" placeholder="" value="1">
+                                        <small id="sueprInvestFee" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="superContribFee">Contribute Fee (%)</label>
+                                        <input type="text" class="form-control" name="superContribFee" placeholder="" value="1">
+                                        <small id="superContribFee" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="superInsurePrem">Insurance Premium ($)</label>
+                                        <input type="text" class="form-control" name="superInsurePrem" placeholder="" value="0">
+                                        <small id="superInsurePrem" class="form-text text-muted">Insurance premium cost per year.</small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="superIndirectFee">Indirect Fees (%)</label>
+                                        <input type="text" class="form-control" name="superIndirectFee" placeholder="" value="0.2">
+                                        <small id="superIndirectFee" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="superReturnRate">Interest Rate (%)</label>
+                                        <input type="text" class="form-control" name="superReturnRate" placeholder="" value="8">
+                                        <small id="superReturnRate" class="form-text text-muted">Annual compound interest rate.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="simToolText">Saving Details</h3>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="savingProportion">Proportion Saved (%)</label>
+                                        <input type="text" class="form-control" name="savingProportion" placeholder="" value="25">
+                                        <small id="savingProportion" class="form-text text-muted">Amount of remaining income after expenses that is saved.</small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="savingInterestRate">Interest Rate (%)</label>
+                                        <input type="text" class="form-control" name="savingInterestRate" placeholder="" value="3">
+                                        <small id="savingInterestRate" class="form-text text-muted">Term deposit will provide ~3% p.a. interest.</small>
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <h3 class="simToolText">Loan Details</h3>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="loanPrincipal">Principal ($)</label>
+                                        <input type="text" class="form-control" name="loanPrincipal" placeholder="" value="350000">
+                                        <small id="loanPrincipal" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="loanInterestRate">Interest Rate (%)</label>
+                                        <input type="text" class="form-control" name="loanInterestRate" placeholder="" value="4">
+                                        <small id="loanInterestRate" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="loanAnnualPayments">Number of Annual Payments</label>
+                                        <input type="text" class="form-control" name="loanAnnualPayments" placeholder="" value="12">
+                                        <small id="loanAnnualPayments" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="loanDuration">Loan Duration (yrs)</label>
+                                        <input type="text" class="form-control" name="loanDuration" placeholder="" value="30">
+                                        <small id="loanDuration" class="form-text text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                    <button type="submit" class="btn btn-secondary">Simulate</button>
+                            </div>
+                        </form>
+            </div>
+          </div>
+      
         </div>
+        <!-- Accordion card -->
+      
+      </div>
     </div>
+      <!-- Accordion wrapper -->
 
-
-    </body>
+</body>
