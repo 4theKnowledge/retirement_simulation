@@ -20,6 +20,10 @@ import matplotlib.pyplot as plt
 # Phase 1 development
 
 def tax_model(annual_income):
+    """
+    Calculates tax on gross annual income.
+    Note: Tax rates are current as of 2019-2020 and sourced from the ATO.
+    """
     tax_table_income = {1: [0, 18200],
                 2: [18201, 37000],
                 3: [37001, 90000],
@@ -33,51 +37,47 @@ def tax_model(annual_income):
                     5: [0.45, 54097]}
 
     for key, value in tax_table_income.items():
-        # print(key, value)
         if value[0] <= annual_income <= value[1]:
-            # print(key)
-            # print(f'Tax rate to pay on the dollar over ${value[0]} is ${tax_table_paymt[key][0]} with lump sum ${tax_table_paymt[key][1]}')
             tax_to_pay = tax_table_paymt[key][1] + tax_table_paymt[key][0] * (annual_income-tax_table_income[key][0])
-            # print(f'Required to pay income tax of: ${tax_to_pay:0.0f}')
            
     monthly_income_tax = tax_to_pay / 12
     
     return monthly_income_tax
 
 
-def super_model(model_phase, annual_income, retire_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val):
+def super_model(super_config, model_phase, annual_income, retire_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val):
     """
     Assumes super annuation is run via an institution and is not self managed
     """
     
-    # TODO CONVERT ALL INFORMATION TO TODAYS DOLLARS AS PER THE ASSUMPTIONS ON: https://www.moneysmart.gov.au/tools-and-resources/calculators-and-apps/superannuation-calculator
+    # TODO CONVERT ALL INFORMATION TO TODAYS DOLLARS AS PER THE ASSUMPTIONS ON: 
+    # https://www.moneysmart.gov.au/tools-and-resources/calculators-and-apps/superannuation-calculator
     #           Also, shift interest calc to be on the last months value not the same months value as this is more realistic.
     
     
     # Monthly Contribution from Employer.
     if model_phase == 1:
         # Earned Income is active and employer is contributing
-        contrib_rate = 0.095    # % p.a.
+        contrib_rate = super_config['contrib_rate']    # % p.a.
         monthly_super_contrib = (annual_income * contrib_rate) / 12
     
     # Deductions - Insurance, Administration and investment fees, etc.
-    admin_fee = (100 / 12) # $100 p.a. administration fee
-    investment_fee = (0.01 / 12) * cumulative_super_bal # 1% investment fee p.a.
+    admin_fee = (super_config['admin_fee_amt'] / 12) # $100 p.a. administration fee
+    investment_fee = (super_config['investment_fee_rate'] / 12) * cumulative_super_bal # 1% investment fee p.a.
     if model_phase == 1:
-        contrib_fee = (0.01 / 12) * cumulative_super_bal # 1% contribution fee p.a.
+        contrib_fee = (super_config['contrib_fee_rate'] / 12) * cumulative_super_bal # 1% contribution fee p.a.
     else:
         contrib_fee = 0
-    insurance_premium = 0
-    indirect_costs = (0.002 / 12) * cumulative_super_bal # Indirect unforeseen costs 0.2% p.a.
+    insurance_premium = super_config['insurance_premium_amt']
+    indirect_costs = (super_config['indirect_costs_rate'] / 12) * cumulative_super_bal # Indirect unforeseen costs 0.2% p.a.
     super_fees = admin_fee + investment_fee + contrib_fee + insurance_premium + indirect_costs
     
     if model_phase == 1:
         # Returns - cumulative value of superannuation
         if cumulative_super_bal == 0:
             cumulative_super_val += monthly_super_contrib + initial_super_bal
-            # print('in bal = 0 loop, cum_val: ', cumulative_super_val)
         else:
-            cumulative_super_val = (cumulative_super_val + monthly_super_contrib - super_fees) * (1 + (0.06 / 12)) # 8% return p.a.
+            cumulative_super_val = (cumulative_super_val + monthly_super_contrib - super_fees) * (1 + (super_config['super_return_rate'] / 12)) # 6% return p.a.
             # cumulative_super_val + monthly_super_contrib
             
         # Cumulative Contributions to super
@@ -91,13 +91,12 @@ def super_model(model_phase, annual_income, retire_income, monthly_super_contrib
             
         return monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val
 
-
     # Drawdown for Phase 2
     if model_phase == 2:
         retirement_income = retire_income
         drawdown_amt = retirement_income / 12
         monthly_super_contrib = 0
-        cumulative_super_val = (cumulative_super_val - drawdown_amt - super_fees) * (1 + (0.06 / 12))
+        cumulative_super_val = (cumulative_super_val - drawdown_amt - super_fees) * (1 + (super_config['super_return_rate'] / 12))
         if cumulative_super_val < 0:
             # Superannuation has been depleted
             drawdown_amt = 0
@@ -193,7 +192,7 @@ def loan_model(principal, interest_rate, annual_payments, years, period, pmt, be
     return period, begin_balance, pmt, interest, cumulative_interest_amt
     
 
-def saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val):
+def saving_model(saving_config, model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val):
     """
     Research into best % saving recommendations
     """
@@ -202,8 +201,7 @@ def saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cu
     # Amount saved per month
     if model_phase == 1:
         if monthly_disposable_income > 0:
-            saving_proportion = 0.25    # 25 %
-            monthly_saved_amt = saving_proportion * monthly_disposable_income
+            monthly_saved_amt = saving_config['proportion'] * monthly_disposable_income
         else:   # cannot save if you have no disposable income...
             monthly_saved_amt = 0
     else:
@@ -213,9 +211,9 @@ def saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cu
     # Interest earned on savings
     if cumulative_savings_bal == 0:
         cumulative_savings_val += monthly_saved_amt + initial_savings_bal
-        # print('in bal = 0 loop, cum_val: ', cumulative_savings_val)
+
     else:
-        cumulative_savings_val = (cumulative_savings_val + monthly_saved_amt) * (1 + (0.03 / 12)) # 3% return p.a. assumes term deposit
+        cumulative_savings_val = (cumulative_savings_val + monthly_saved_amt) * (1 + (saving_config['interest_rate'] / 12)) # 3% return p.a. assumes term deposit
     
     # Cumulative savings
     if cumulative_savings_bal == 0:
@@ -226,7 +224,7 @@ def saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cu
     return  monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val
     
     
-def asset_value_property(model_phase, init_principal, period, asset_value):
+def asset_value_property(asset_config, model_phase, init_principal, period, asset_value):
     """
     Takes an asset dictionary that consists of asset types, their initial values, their appreciated or depreciated values, and a counter for periods which is used to apply compounding of
     additional value for each pass of the function.
@@ -238,9 +236,7 @@ def asset_value_property(model_phase, init_principal, period, asset_value):
     t - number of time periods elapsed
     """
     
-    roi_rate = 0.03 # 3% p.a.
-    
-    asset_value = init_principal * (1 + (roi_rate/12))**(period)
+    asset_value = init_principal * (1 + (asset_config['interest_rate'] /12))**(period)  # compounds asset value each period... monthly... TODO: make more flexible.
     
     if model_phase == 2:
         period += 1
@@ -248,7 +244,7 @@ def asset_value_property(model_phase, init_principal, period, asset_value):
     return asset_value, period
           
     
-def phase_model(start_date, current_age, retire_age, retirement_end_age, start_annual_income, retire_income):
+def phase_model(model_config, start_date, current_age, retire_age, retirement_end_age, start_annual_income, retire_income):
     """
     """
     
@@ -262,11 +258,11 @@ def phase_model(start_date, current_age, retire_age, retirement_end_age, start_a
     
     
     # LOAN INIT DETAILS
-    init_principal = 350000
-    principal = 350000
-    interest_rate = 0.04
-    annual_payments = 12
-    years = 25
+    init_principal = model_config['loan_model']['principal']
+    principal = model_config['loan_model']['principal']
+    interest_rate = model_config['loan_model']['interest_rate']
+    annual_payments = model_config['loan_model']['annual_payments']
+    years = model_config['loan_model']['years']
     period = 1
     pmt = -round(np.pmt(interest_rate/annual_payments, years*annual_payments, principal), 2)
     begin_balance = principal
@@ -299,7 +295,7 @@ def phase_model(start_date, current_age, retire_age, retirement_end_age, start_a
         monthly_income_tax = tax_model(start_annual_income)
         
         # SUPERANNUATION
-        monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val = super_model(model_phase, start_annual_income, retire_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val)
+        monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val = super_model(model_config['super_model'], model_phase, start_annual_income, retire_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val)
         
         # LIVING EXPENSES
         monthly_expenses, cumulative_savings_val, begin_balance = expenses_model(model_phase, cumulative_savings_val, monthly_disposable_income, begin_balance)
@@ -312,10 +308,10 @@ def phase_model(start_date, current_age, retire_age, retirement_end_age, start_a
         monthly_disposable_income = monthly_income - monthly_expenses - pmt
         
         # SAVINGS
-        monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val = saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val)
+        monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val = saving_model(model_config['saving_model'], model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val)
 
         # ASSET APPRECIATION (BASIC; one property for now)
-        monthly_asset_value, _ = asset_value_property(model_phase, init_principal, period, monthly_asset_value) # property value
+        monthly_asset_value, _ = asset_value_property(model_config['asset_model'], model_phase, init_principal, period, monthly_asset_value) # property value
         
         # OVERALL WEALTH
         monthly_wealth_amt = cumulative_super_val + cumulative_savings_val + monthly_asset_value
@@ -357,16 +353,16 @@ def phase_model(start_date, current_age, retire_age, retirement_end_age, start_a
         monthly_expenses, cumulative_savings_val, _ = expenses_model(model_phase, cumulative_savings_val, monthly_disposable_income, begin_balance)
         
         # SAVINGS
-        monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val = saving_model(model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val)
+        monthly_saved_amt, cumulative_savings_bal, cumulative_savings_val = saving_model(model_config['saving_model'], model_phase, initial_savings_bal, monthly_disposable_income, cumulative_savings_bal, cumulative_savings_val)
         
         # SUPER DRAWDOWN
-        monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val, drawdown_amt = super_model(model_phase, start_annual_income, retire_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val)
+        monthly_super_contrib, cumulative_super_bal, super_fees, cumulative_super_val, drawdown_amt = super_model(model_config['super_model'], model_phase, start_annual_income, retire_income, monthly_super_contrib, initial_super_bal, cumulative_super_bal, cumulative_super_val)
         
         # DISPOSABLE INCOME
         monthly_disposable_income = drawdown_amt - monthly_expenses
 
         # ASSET APPRECIATION (BASIC; one property for now)
-        monthly_asset_value, period = asset_value_property(model_phase, init_principal, period, monthly_asset_value) # property value
+        monthly_asset_value, period = asset_value_property(model_config['asset_model'], model_phase, init_principal, period, monthly_asset_value) # property value
 
         # OVERALL WEALTH
         monthly_wealth_amt = cumulative_super_val + cumulative_savings_val + monthly_asset_value
@@ -432,15 +428,44 @@ def plot_fnc(df):
 
 def main(): 
 
-    # Init details
+    # General Details
     income = 50000
     retire_income = 50000
     start_date = datetime.date(2020,1,1)    # Y-d-m
     current_age = 26
     retire_age = 65
     retirement_end_age = 80
+    
+    # super init
+    super_config = {'contrib_rate': 0.095,
+                  'admin_fee_amt': 100,
+                  'investment_fee_rate': 0.01,
+                  'contrib_fee_rate': 0.01,
+                  'insurance_premium_amt': 0,
+                  'indirect_costs_rate': 0.002,
+                  'super_return_rate': 0.06}
+    
+    # saving init
+    saving_config = {'proportion': 0.25,
+                     'interest_rate': 0.03}
+    # loan init
+    loan_config = {'principal': 300000,
+                   'interest_rate': 0.04,
+                   'annual_payments': 12,
+                   'years': 30}
+    
+    # expenses init
 
-    df = pd.DataFrame(phase_model(start_date, current_age, retire_age, retirement_end_age, income, retire_income))
+    # asset value init
+    asset_config = {'interest_rate': 0.03}
+
+    # model init
+    model_config = {'super_model': super_config,
+                    'loan_model': loan_config,
+                    'saving_model': saving_config,
+                    'asset_model': asset_config}
+
+    df = pd.DataFrame(phase_model(model_config, start_date, current_age, retire_age, retirement_end_age, income, retire_income))
     # df.to_csv('simulation_results.csv', index=False)
     
     print(df.head(50))
