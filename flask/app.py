@@ -36,7 +36,8 @@ def load_sim_data():
     return plot_data
     
     
-def model_simulation(current_age = 20,
+def model_simulation(model_config, 
+                     current_age = 20,
                      retire_age = 50,
                      income = 52000,
                      retire_income = 25000,
@@ -44,7 +45,7 @@ def model_simulation(current_age = 20,
     
     start_date = start_date = datetime.date(2020,1,1)   
     
-    df = pd.DataFrame(phase_model(start_date,
+    df = pd.DataFrame(phase_model(model_config, start_date,
                                   current_age,
                                   retire_age,
                                   retirement_end_age,
@@ -73,11 +74,42 @@ def home():
     if request.method == 'POST':
         currentAge = int(request.form.get('currentAge'))
         retireAge = int(request.form.get('retireAge'))
-        currentIncome = int(request.form.get('currentIncome'))
-        retireIncome = int(request.form.get('retireIncome'))
+        currentIncome = float(request.form.get('currentIncome'))
+        retireIncome = float(request.form.get('retireIncome'))
         retireEndAge = int(request.form.get('retireEndAge'))
         
-        plot_data = model_simulation(currentAge,
+        # super init
+        super_config = {'contrib_rate': float(request.form.get('superContribRate')) / 100,
+                        'admin_fee_amt': float(request.form.get('superAdminFees')),
+                        'investment_fee_rate': float(request.form.get('sueprInvestFee')) / 100,
+                        'contrib_fee_rate': float(request.form.get('superContribFee')) / 100,
+                        'insurance_premium_amt': float(request.form.get('superInsurePrem')),
+                        'indirect_costs_rate': float(request.form.get('superIndirectFee')) / 100,
+                        'super_return_rate': float(request.form.get('superReturnRate')) /100
+                        }
+        
+        # saving init
+        saving_config = {'proportion': 0.25,
+                        'interest_rate': 0.03}
+        # loan init
+        loan_config = {'principal': 300000,
+                        'interest_rate': 0.04,
+                        'annual_payments': 12,
+                        'years': 30}
+        
+        # expenses init
+
+        # asset value init
+        asset_config = {'interest_rate': 0.03}
+        
+        
+        model_config = {'super_model': super_config,
+                        'loan_model': loan_config,
+                        'saving_model': saving_config,
+                        'asset_model': asset_config}
+                
+        plot_data = model_simulation(model_config,
+                                     currentAge,
                                      retireAge,
                                      currentIncome,
                                      retireIncome,

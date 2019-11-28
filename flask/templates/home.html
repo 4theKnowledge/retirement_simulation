@@ -10,6 +10,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.11/js/mdb.min.js"></script>
 </head> 
 <body>
     <div class="jumbotron text-center" style="margin-bottom:0">
@@ -18,23 +19,23 @@
         </div> 
         
         <!-- Navbar -->
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>                        
-                    </button>
-                    <a class="navbar-brand" href="#">Sim Tool</a>
-                </div>
-                <div class="collapse navbar-collapse" id="myNavbar">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Assumptions & Limitations</a></li>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>                        
+                </button>
+                <a class="navbar-brand" href="#">Sim Tool</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Assumptions & Limitations</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
     <!-- Navbar -->
@@ -48,33 +49,68 @@
                 <br>
                 <div class="form-group">
                     <label for="currentAge">Current Age</label>
-                    <input type="text" class="form-control" name="currentAge" placeholder="Enter current age">
+                    <input type="text" class="form-control" name="currentAge" placeholder="Enter current age" value="26">
                     <small id="currentAgeHelp" class="form-text text-muted">This is the beginning date of the simulation.</small>
                 </div>
                 <div class="form-group">
-                    <label for="retireAge">Desired Retirement Age</label>
-                    <input type="text" class="form-control" name="retireAge" placeholder="Enter desired retirement age">
+                    <label for="retireAge">Retirement Age</label>
+                    <input type="text" class="form-control" name="retireAge" placeholder="Enter desired retirement age" value= "65">
                     <small id="retireAgeHelp" class="form-text text-muted">This is the age you expect to retire.</small>
-                </div>
+                    </div>
                 <div class="form-group">
-                    <label for="currentIncome">Current Income</label>
-                    <input type="text" class="form-control" name="currentIncome" placeholder="Enter current income">
+                    <label for="currentIncome">Current Income ($)</label>
+                    <input type="text" class="form-control" name="currentIncome" placeholder="Enter current income" value="52000">
                     <small id="currentIncomeHelp" class="form-text text-muted">Your current gross (before tax) annual income.</small>
                 </div>
                 <div class="form-group">
-                    <label for="retireIncome">Desired Retirement Income</label>
-                    <input type="text" class="form-control" name="retireIncome" placeholder="Enter desired retirement income">
+                    <label for="retireIncome">Retirement Income ($)</label>
+                    <input type="text" class="form-control" name="retireIncome" placeholder="Enter desired retirement income" value="25000">
                     <small id="retireIncomeHelp" class="form-text text-muted">This is how much you expect to require per year upon retirement.</small>
                 </div>
                 <div class="form-group">
-                    <label for="retireEndAge">Likely Retirement End Age</label>
-                    <input type="text" class="form-control" name="retireEndAge" placeholder="Enter likely retirement end age">
+                    <label for="retireEndAge">Retirement End Age</label>
+                    <input type="text" class="form-control" name="retireEndAge" placeholder="Enter likely retirement end age" value="80">
                     <small id="retireEndAgeHelp" class="form-text text-muted">Expected end of life (Aus ave - Male: 80 Female: 85).</small>
                 </div>
+                <!-- SUPERANNUATION FORM ELEMENTS -->
+                <!-- Copy other website functionality with pre-defined selections that populate the fields...-->
                 <h2>Superannuation Details</h2>
                 <br>
-
-                
+                <div class="form-group">
+                    <label for="superContribRate">Employer Contributon (%)</label>
+                    <input type="text" class="form-control" name="superContribRate" placeholder="" value="9.5">
+                    <small id="superContribRate" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                    <label for="superAdminFees">Admin Fees ($)</label>
+                    <input type="text" class="form-control" name="superAdminFees" placeholder="" value="100">
+                    <small id="superAdminFees" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                    <label for="sueprInvestFee">Investment Fee (%)</label>
+                    <input type="text" class="form-control" name="sueprInvestFee" placeholder="" value="1">
+                    <small id="sueprInvestFee" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                    <label for="superContribFee">Contribute Fee (%)</label>
+                    <input type="text" class="form-control" name="superContribFee" placeholder="" value="1">
+                    <small id="superContribFee" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                    <label for="superInsurePrem">Insurance Premium ($)</label>
+                    <input type="text" class="form-control" name="superInsurePrem" placeholder="" value="0">
+                    <small id="superInsurePrem" class="form-text text-muted">Insurance premium cost per year.</small>
+                    </div>
+                <div class="form-group">
+                    <label for="superIndirectFee">Indirect Fees (%)</label>
+                    <input type="text" class="form-control" name="superIndirectFee" placeholder="" value="0.2">
+                    <small id="superIndirectFee" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                    <label for="superReturnRate">Interest Rate (%)</label>
+                    <input type="text" class="form-control" name="superReturnRate" placeholder="" value="8">
+                    <small id="superReturnRate" class="form-text text-muted">Annual compound interest rate.</small>
+                </div>
 
                 <!-- <div class="form-group form-check">
                     <input type="checkbox" class="form-check-input" id="exampleCheck1">
