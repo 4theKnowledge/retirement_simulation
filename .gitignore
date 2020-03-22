@@ -1,7 +1,10 @@
 # Ignore these directories
 UI/
 resources/
+doc/
 
 # Files to ignore
 *.xlsx
 *.xls
+*.pdf
+*.log
