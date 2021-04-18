@@ -1,0 +1,4 @@
+Development ideas
+- Animate barcharts over time...
+- Form for user input; pre-populated in particular areas
+    - https://www.youtube.com/watch?v=I-PZ7rQWs04&ab_channel=ReactConferencesbyGitNation

@@ -1,0 +1,11 @@
+{
+  "name": "fin-sim",
+  "version": "1.0.0",
+  "description": "Financial simulation SPA",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tyler Bikaun",
+  "license": "ISC"
+}
